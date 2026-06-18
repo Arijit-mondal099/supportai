@@ -1,9 +1,11 @@
+import { getChatModel } from "@/lib/ai";
 import { db_connection } from "@/lib/db";
-import { AccountModel } from "@/models/account.model";
+import { resolveProviderKey } from "@/lib/providerKey";
+import { isRagConfigured, retrieve } from "@/lib/rag";
 import { ChatbotModel } from "@/models/chatbot.model";
 import { ConversationModel } from "@/models/conversation.model";
 import { MessageModel } from "@/models/message.model";
-import { GoogleGenAI, ThinkingLevel } from "@google/genai";
+import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { isValidObjectId } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -49,12 +51,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Resolve the API key: per-bot override first, then the account-level key.
-    let apiKey = bot.apiKeyOverride?.trim();
-    if (!apiKey) {
-      const account = await AccountModel.findOne({ ownerId: bot.ownerId });
-      apiKey = account?.apiKey?.trim() || "";
-    }
+    const { provider, apiKey } = await resolveProviderKey(bot);
     if (!apiKey) {
       return NextResponse.json(
         { success: false, message: "No API key configured for this chatbot." },
@@ -62,37 +59,52 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Load the existing conversation (if any) so the bot has multi-turn context.
+    // Replay prior messages of this session for multi-turn context.
     const conversation = sessionId?.trim()
       ? await ConversationModel.findOne({ botId: bot._id, sessionId })
       : null;
 
-    const history: { role: "user" | "model"; parts: { text: string }[] }[] = [];
+    const priorMessages = [];
     if (conversation) {
       const prev = await MessageModel.find({ conversationId: conversation._id })
         .sort({ createdAt: 1 })
         .limit(HISTORY_LIMIT)
         .lean();
       for (const m of prev) {
-        history.push({ role: m.role === "model" ? "model" : "user", parts: [{ text: m.text }] });
+        priorMessages.push(m.role === "model" ? new AIMessage(m.text) : new HumanMessage(m.text));
       }
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    // Ground the answer in the bot's knowledge base (best-effort).
+    let systemText = bot.knowledge;
+    if (isRagConfigured()) {
+      try {
+        const snippets = await retrieve(provider, apiKey, String(bot._id), prompt, 5);
+        if (snippets.length) {
+          const block = snippets.map((s, i) => `[${i + 1}] ${s}`).join("\n\n");
+          systemText = `Relevant knowledge (use this to answer accurately):\n${block}\n\n---\n\n${bot.knowledge}`;
+        }
+      } catch (ragErr) {
+        console.error("RAG retrieve failed", ragErr);
+      }
+    }
 
-    const LLM = ai.chats.create({
-      model: "gemini-3-flash-preview",
-      history,
-      config: {
-        systemInstruction: bot.knowledge,
-        thinkingConfig: {
-          thinkingLevel: ThinkingLevel.LOW,
-        },
-      },
-    });
+    const model = getChatModel(provider, apiKey);
+    const result = await model.invoke([
+      new SystemMessage(systemText),
+      ...priorMessages,
+      new HumanMessage(prompt),
+    ]);
 
-    const res = await LLM.sendMessage({ message: prompt });
-    const reply = res.text ?? "";
+    const content = result.content;
+    const reply =
+      typeof content === "string"
+        ? content
+        : content
+            .map((part) =>
+              typeof part === "string" ? part : "text" in part ? String(part.text ?? "") : "",
+            )
+            .join("");
 
     // Persist the exchange (best-effort; never fail the reply on a logging error).
     if (sessionId?.trim()) {
@@ -117,21 +129,14 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      {
-        success: true,
-        data: { role: "model", text: reply },
-      },
+      { success: true, data: { role: "model", text: reply } },
       { status: 200, headers: corsHeaders },
     );
   } catch (error) {
     console.error("Error From AI Gen", error);
 
     return NextResponse.json(
-      {
-        success: false,
-        message: "An error occurred while processing the request.",
-        error,
-      },
+      { success: false, message: "An error occurred while processing the request.", error },
       { status: 500, headers: corsHeaders },
     );
   }

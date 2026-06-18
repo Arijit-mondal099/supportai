@@ -1,0 +1,26 @@
+import { model, models, Schema, Types } from "mongoose";
+
+export interface IDocument {
+  botId: Types.ObjectId;
+  ownerId: string;
+  title: string;
+  sourceType: "file" | "url" | "text";
+  status: "processing" | "ready" | "error";
+  chunkCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const documentSchema = new Schema<IDocument>(
+  {
+    botId: { type: Schema.Types.ObjectId, ref: "Chatbot", required: true, index: true },
+    ownerId: { type: String, required: true, index: true },
+    title: { type: String, required: true },
+    sourceType: { type: String, enum: ["file", "url", "text"], required: true },
+    status: { type: String, enum: ["processing", "ready", "error"], default: "processing" },
+    chunkCount: { type: Number, default: 0 },
+  },
+  { timestamps: true },
+);
+
+export const DocumentModel = models.Document || model<IDocument>("Document", documentSchema);

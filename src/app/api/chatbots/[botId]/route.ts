@@ -2,6 +2,7 @@ import { requireOwner } from "@/lib/auth";
 import { db_connection } from "@/lib/db";
 import { getChatbot, serializeBot } from "@/lib/chatbots";
 import { buildKnowledge } from "@/lib/knowledge";
+import { deleteVectors } from "@/lib/rag";
 import { ChatbotModel } from "@/models/chatbot.model";
 import mongoose, { isValidObjectId } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
@@ -110,7 +111,18 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
   const _id = new mongoose.Types.ObjectId(botId);
   await ChatbotModel.deleteOne({ _id: botId, ownerId: owner.ownerId });
 
-  // Cascade: remove everything that belongs to this bot (collections created in later phases).
+  // Remove this bot's vectors from Pinecone (best-effort) before dropping the mirrors.
+  try {
+    const chunkDocs = await conn
+      .collection("chunks")
+      .find({ botId: _id }, { projection: { pineconeId: 1 } })
+      .toArray();
+    await deleteVectors(chunkDocs.map((c) => c.pineconeId).filter(Boolean));
+  } catch (error) {
+    console.error("Pinecone cleanup failed", error);
+  }
+
+  // Cascade: remove everything in Mongo that belongs to this bot.
   await Promise.all([
     conn.collection("conversations").deleteMany({ botId: _id }),
     conn.collection("messages").deleteMany({ botId: _id }),
