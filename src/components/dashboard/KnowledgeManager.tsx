@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, Link2, Loader2, Plus, Trash2 } from "lucide-react";
+import { FileText, Link2, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { apiClient } from "@/lib/axios";
 
 interface DocItem {
@@ -13,7 +13,13 @@ interface DocItem {
   createdAt: string | null;
 }
 
-type SourceTab = "text" | "url";
+type SourceTab = "text" | "url" | "file";
+
+const TABS: { id: SourceTab; icon: React.ReactNode }[] = [
+  { id: "text", icon: <FileText size={13} /> },
+  { id: "url", icon: <Link2 size={13} /> },
+  { id: "file", icon: <Upload size={13} /> },
+];
 
 const statusStyles: Record<DocItem["status"], string> = {
   ready: "border-emerald-200 bg-emerald-50 text-emerald-600",
@@ -28,6 +34,8 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [url, setUrl] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [fileKey, setFileKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -51,13 +59,37 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
     setError("");
     setSubmitting(true);
     try {
-      const payload =
-        tab === "url" ? { sourceType: "url", title, url } : { sourceType: "text", title, content };
-      const { data } = await apiClient.post(`/api/chatbots/${botId}/documents`, payload);
+      let data: { success?: boolean; message?: string };
+
+      if (tab === "file") {
+        if (!file) {
+          setSubmitting(false);
+          return;
+        }
+        const form = new FormData();
+        form.append("file", file);
+        if (title.trim()) form.append("title", title.trim());
+        const res = await fetch(`/api/chatbots/${botId}/documents`, {
+          method: "POST",
+          body: form,
+          credentials: "include",
+        });
+        data = await res.json();
+      } else {
+        const payload =
+          tab === "url"
+            ? { sourceType: "url", title, url }
+            : { sourceType: "text", title, content };
+        const resp = await apiClient.post(`/api/chatbots/${botId}/documents`, payload);
+        data = resp.data;
+      }
+
       if (data.success) {
         setTitle("");
         setContent("");
         setUrl("");
+        setFile(null);
+        setFileKey((k) => k + 1);
         await loadDocs();
       } else {
         setError(data.message || "Failed to add document.");
@@ -81,30 +113,32 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
     }
   };
 
-  const canSubmit = tab === "url" ? url.trim().length > 0 : content.trim().length > 0;
+  const canSubmit =
+    tab === "file" ? !!file : tab === "url" ? url.trim().length > 0 : content.trim().length > 0;
 
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       {/* Add form */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-base font-bold tracking-tight text-slate-900">Add knowledge</h2>
-        <p className="mt-1 text-sm text-slate-400">
-          Paste text or import a page. It&apos;s embedded and used to ground answers.
+        <p className="mt-1 text-sm text-slate-500">
+          Paste text, import a page, or upload a file (PDF, Word, TXT). It&apos;s embedded and used
+          to ground answers.
         </p>
 
         <div className="mt-5 flex gap-2">
-          {(["text", "url"] as const).map((t) => (
+          {TABS.map((t) => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
+              key={t.id}
+              onClick={() => setTab(t.id)}
               className={`flex cursor-pointer items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold capitalize transition ${
-                tab === t
+                tab === t.id
                   ? "border-slate-900 bg-slate-900 text-white"
                   : "border-slate-200 text-slate-500 hover:border-slate-300"
               }`}
             >
-              {t === "text" ? <FileText size={13} /> : <Link2 size={13} />}
-              {t}
+              {t.icon}
+              {t.id}
             </button>
           ))}
         </div>
@@ -117,14 +151,16 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
             className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:ring-2 focus:ring-slate-900/10"
           />
 
-          {tab === "url" ? (
+          {tab === "url" && (
             <input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://docs.example.com/faq"
               className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:ring-2 focus:ring-slate-900/10"
             />
-          ) : (
+          )}
+
+          {tab === "text" && (
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -132,6 +168,23 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
               placeholder="Paste FAQs, policies, product details…"
               className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:ring-2 focus:ring-slate-900/10"
             />
+          )}
+
+          {tab === "file" && (
+            <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center transition hover:border-slate-400">
+              <Upload size={20} className="text-slate-400" />
+              <span className="text-sm font-medium text-slate-700">
+                {file ? file.name : "Choose a file to upload"}
+              </span>
+              <span className="text-[11px] text-slate-400">PDF, DOCX, TXT, MD or CSV</span>
+              <input
+                key={fileKey}
+                type="file"
+                accept=".pdf,.docx,.txt,.md,.csv"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                className="hidden"
+              />
+            </label>
           )}
 
           {error && <p className="text-xs text-rose-500">{error}</p>}
@@ -149,7 +202,7 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
 
       {/* Document list */}
       <div>
-        <span className="mb-3 block text-xs font-semibold font-title uppercase tracking-widest text-slate-400">
+        <span className="mb-3 block font-title text-xs font-semibold uppercase tracking-widest text-slate-400">
           Documents
         </span>
         {loading ? (

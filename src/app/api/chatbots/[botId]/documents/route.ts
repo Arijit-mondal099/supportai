@@ -1,5 +1,6 @@
 import { requireOwner } from "@/lib/auth";
 import { db_connection } from "@/lib/db";
+import { extractTextFromFile, UnsupportedFileError } from "@/lib/extractFile";
 import { resolveProviderKey } from "@/lib/providerKey";
 import { addDocuments, isRagConfigured, splitText } from "@/lib/rag";
 import { ChatbotModel } from "@/models/chatbot.model";
@@ -7,6 +8,8 @@ import { ChunkModel } from "@/models/chunk.model";
 import { DocumentModel } from "@/models/document.model";
 import { isValidObjectId } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
 
 interface Params {
   params: Promise<{ botId: string }>;
@@ -64,13 +67,6 @@ export async function POST(request: NextRequest, { params }: Params) {
     return bad("Knowledge base is not configured on this server (Pinecone).");
   }
 
-  const { sourceType, title, content, url } = (await request.json()) as {
-    sourceType?: "text" | "url";
-    title?: string;
-    content?: string;
-    url?: string;
-  };
-
   await db_connection();
   const bot = await ChatbotModel.findOne({ _id: botId, ownerId: owner.ownerId });
   if (!bot) return notFound();
@@ -78,22 +74,55 @@ export async function POST(request: NextRequest, { params }: Params) {
   const { provider, apiKey } = await resolveProviderKey(bot);
   if (!apiKey) return bad("Add an API key in Account settings first.");
 
-  // Resolve the raw text to ingest.
+  // Resolve the raw text + title + source type from a file upload (multipart)
+  // or a JSON body (pasted text / URL).
   let text = "";
-  let resolvedTitle = title?.trim() || "";
-  if (sourceType === "url") {
-    if (!url?.trim()) return bad("A URL is required.");
+  let resolvedTitle = "";
+  let sourceType: "file" | "url" | "text" = "text";
+
+  const contentType = request.headers.get("content-type") || "";
+
+  if (contentType.includes("multipart/form-data")) {
+    const form = await request.formData();
+    const file = form.get("file");
+    const title = (form.get("title") as string | null)?.trim() || "";
+    if (!(file instanceof File)) return bad("No file provided.");
+
+    sourceType = "file";
+    resolvedTitle = title || file.name;
     try {
-      const html = await fetch(url).then((r) => r.text());
-      text = stripHtml(html);
-    } catch {
-      return bad("Could not fetch the provided URL.");
+      text = await extractTextFromFile(file);
+    } catch (error) {
+      if (error instanceof UnsupportedFileError) {
+        return bad("Unsupported file type. Upload a PDF, DOCX, TXT, MD, or CSV file.");
+      }
+      console.error("File parse failed", error);
+      return bad("Could not read that file.");
     }
-    if (!resolvedTitle) resolvedTitle = url;
   } else {
-    if (!content?.trim()) return bad("Content is required.");
-    text = content;
-    if (!resolvedTitle) resolvedTitle = "Pasted text";
+    const body = (await request.json()) as {
+      sourceType?: "text" | "url";
+      title?: string;
+      content?: string;
+      url?: string;
+    };
+    resolvedTitle = body.title?.trim() || "";
+
+    if (body.sourceType === "url") {
+      if (!body.url?.trim()) return bad("A URL is required.");
+      try {
+        text = stripHtml(await fetch(body.url).then((r) => r.text()));
+      } catch {
+        return bad("Could not fetch the provided URL.");
+      }
+      sourceType = "url";
+      if (!resolvedTitle) resolvedTitle = body.url;
+    } else {
+      if (!body.content?.trim()) return bad("Content is required.");
+      text = body.content;
+      sourceType = "text";
+      if (!resolvedTitle) resolvedTitle = "Pasted text";
+    }
   }
 
   const chunks = await splitText(text);
@@ -103,7 +132,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     botId: bot._id,
     ownerId: owner.ownerId,
     title: resolvedTitle,
-    sourceType: sourceType === "url" ? "url" : "text",
+    sourceType,
     status: "processing",
   });
 

@@ -22,9 +22,11 @@
     "@scalekit-sdk/node": "^2.1.9",
     "axios": "^1.13.5",
     "lucide-react": "^0.563.0",
+    "mammoth": "^1.12.0",
     "mongoose": "^9.1.6",
     "motion": "^12.31.2",
     "next": "16.1.6",
+    "pdf-parse": "^2.4.5",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
