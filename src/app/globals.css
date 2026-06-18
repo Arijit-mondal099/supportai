@@ -64,7 +64,9 @@ h2 {
   font-family: var(--font-heading);
 }
 
-/* Warm cream base + fine diagonal pinstripe hatch used on the landing page. */
+/* Warm cream base + fine diagonal pinstripe hatch used on the landing page.
+   background-attachment: fixed keeps the pattern locked to the viewport so
+   only the content scrolls over it. */
 .bg-pinstripe {
   background-color: #ece9e1;
   background-image: repeating-linear-gradient(
@@ -74,4 +76,5 @@ h2 {
     transparent 1px,
     transparent 9px
   );
+  background-attachment: fixed;
 }
