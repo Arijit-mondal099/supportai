@@ -5,4 +5,6 @@ export const ENV = {
   SCALEKIT_CLIENT_ID: process.env.SCALEKIT_CLIENT_ID! as string,
   SCALEKIT_CLIENT_SECRET: process.env.SCALEKIT_CLIENT_SECRET! as string,
   MONGODB_URI: process.env.MONGODB_URI! as string,
+  PINECONE_API_KEY: process.env.PINECONE_API_KEY as string | undefined,
+  PINECONE_INDEX: process.env.PINECONE_INDEX as string | undefined,
 };

@@ -13,6 +13,12 @@
   },
   "dependencies": {
     "@google/genai": "^1.40.0",
+    "@langchain/core": "^1.2.0",
+    "@langchain/google-genai": "^2.2.0",
+    "@langchain/openai": "^1.5.1",
+    "@langchain/pinecone": "^1.0.3",
+    "@langchain/textsplitters": "^1.0.1",
+    "@pinecone-database/pinecone": "^5.1.2",
     "@scalekit-sdk/node": "^2.1.9",
     "axios": "^1.13.5",
     "lucide-react": "^0.563.0",
