@@ -1,3 +1,4 @@
+import { normalizeProvider } from "@/lib/ai";
 import { requireOwner } from "@/lib/auth";
 import { db_connection } from "@/lib/db";
 import { AccountModel } from "@/models/account.model";
@@ -27,23 +28,29 @@ export async function GET() {
     success: true,
     account: {
       email: account.email,
+      provider: account.provider,
       hasApiKey: !!account.apiKey,
       apiKeyMasked: maskKey(account.apiKey),
     },
   });
 }
 
-// Update the account-level Gemini API key (reused by all of this owner's bots).
+// Update the AI provider and its API key (reused by all of this owner's bots).
 export async function PUT(request: NextRequest) {
   const owner = await requireOwner();
   if (!owner) return unauthorized();
 
-  const { apiKey } = (await request.json()) as { apiKey?: string };
+  const { provider, apiKey } = (await request.json()) as { provider?: string; apiKey?: string };
 
   await db_connection();
   const account = await AccountModel.findOneAndUpdate(
     { ownerId: owner.ownerId },
-    { ownerId: owner.ownerId, email: owner.email, apiKey: apiKey?.trim() ?? "" },
+    {
+      ownerId: owner.ownerId,
+      email: owner.email,
+      provider: normalizeProvider(provider),
+      apiKey: apiKey?.trim() ?? "",
+    },
     { new: true, upsert: true },
   );
 
@@ -52,6 +59,7 @@ export async function PUT(request: NextRequest) {
     message: "API key saved",
     account: {
       email: account.email,
+      provider: account.provider,
       hasApiKey: !!account.apiKey,
       apiKeyMasked: maskKey(account.apiKey),
     },
