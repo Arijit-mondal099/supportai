@@ -9,9 +9,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(ENV.API_URI);
   } catch (error) {
     console.log("Logout Error", error);
-    return NextResponse.json(
-      { success: false, message: "Logout failed" },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: "Logout failed" }, { status: 500 });
   }
 }

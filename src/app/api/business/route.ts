@@ -23,8 +23,7 @@ interface Body {
  */
 export async function POST(request: NextRequest) {
   try {
-    const { ownerId, supportEmail, apiKey, businessInfo, botInfo } =
-      (await request.json()) as Body;
+    const { ownerId, supportEmail, apiKey, businessInfo, botInfo } = (await request.json()) as Body;
 
     if (!ownerId || !businessInfo || !botInfo || !supportEmail || !apiKey) {
       return NextResponse.json(

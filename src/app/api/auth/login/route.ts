@@ -4,9 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const URL = scalekit.getAuthorizationUrl(
-      `${ENV.API_URI}/api/auth/verify`,
-    );
+    const URL = scalekit.getAuthorizationUrl(`${ENV.API_URI}/api/auth/verify`);
 
     if (!URL) {
       return NextResponse.json(
@@ -18,9 +16,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(URL);
   } catch (error) {
     console.error("Error for login", error);
-    return NextResponse.json(
-      { success: false, message: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
   }
 }

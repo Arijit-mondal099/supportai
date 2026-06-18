@@ -32,13 +32,7 @@ export interface PersonaInfo {
   personalityDescription: string;
 }
 
-export const Setting = ({
-  ownerId,
-  supportEmail,
-}: {
-  ownerId: string;
-  supportEmail: string;
-}) => {
+export const Setting = ({ ownerId, supportEmail }: { ownerId: string; supportEmail: string }) => {
   const [activeTab, setActiveTab] = useState<Tab>("business");
   const [showKey, setShowKey] = useState(false);
   const [saved, setSaved] = useState(false);

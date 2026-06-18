@@ -34,7 +34,7 @@ const businessSchema = new Schema<IBusiness>(
       communicationTone: { type: String, required: true },
       personalityDescription: { type: String, required: true },
     },
-    knowledge: { type: String, required: true }
+    knowledge: { type: String, required: true },
   },
   { timestamps: true },
 );

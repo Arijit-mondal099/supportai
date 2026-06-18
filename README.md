@@ -73,7 +73,7 @@ Follow these steps to set up the project locally.
     MONGODB_URI=your_mongodb_connection_string
 
     # AI (Google Gemini)
-    # Ensure your Google AI API key is configured where the SDK expects it, 
+    # Ensure your Google AI API key is configured where the SDK expects it,
     # or add a specific variable if your implementation uses one (e.g., GOOGLE_API_KEY).
     ```
 
@@ -118,9 +118,9 @@ Follow these steps to set up the project locally.
 
 The application exposes several API endpoints for internal use:
 
--   `/api/auth`: Handles user authentication flows.
--   `/api/business`: Manages business profiles and settings.
--   `/api/chat`: Processes chat messages using Google Gemini.
+- `/api/auth`: Handles user authentication flows.
+- `/api/business`: Manages business profiles and settings.
+- `/api/chat`: Processes chat messages using Google Gemini.
 
 ## 🤝 Contributing
 

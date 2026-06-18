@@ -15,10 +15,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const session = await scalekit.authenticateWithCode(
-      code,
-      `${ENV.API_URI}/api/auth/verify`,
-    );
+    const session = await scalekit.authenticateWithCode(code, `${ENV.API_URI}/api/auth/verify`);
 
     const cookieStore = await cookies();
 
@@ -32,9 +29,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(ENV.API_URI);
   } catch (error) {
     console.log("Error validation", error);
-    return NextResponse.json(
-      { success: false, message: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
   }
 }

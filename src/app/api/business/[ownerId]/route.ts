@@ -17,10 +17,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     const business = await BusinessModel.findOne({ $or: [{ ownerId }] });
 
     if (!business) {
-      return NextResponse.json(
-        { success: false, message: "Business not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ success: false, message: "Business not found" }, { status: 404 });
     }
 
     return NextResponse.json({ success: true, business }, { status: 200 });

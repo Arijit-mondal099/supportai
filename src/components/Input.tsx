@@ -20,9 +20,19 @@ interface InputProps extends BaseProps {
   rightElement?: React.ReactNode;
 }
 
-export const Input: React.FC<InputProps> = (
-    { label, icon, placeholder, hint, error, required, disabled, type, rows = 4, rightElement, ...rest }
-) => {
+export const Input: React.FC<InputProps> = ({
+  label,
+  icon,
+  placeholder,
+  hint,
+  error,
+  required,
+  disabled,
+  type,
+  rows = 4,
+  rightElement,
+  ...rest
+}) => {
   const hasError = !!error;
 
   const wrapperClass = `
@@ -70,17 +80,11 @@ export const Input: React.FC<InputProps> = (
           />
         )}
 
-        {rightElement && (
-          <span className="flex items-center text-slate-400">
-            {rightElement}
-          </span>
-        )}
+        {rightElement && <span className="flex items-center text-slate-400">{rightElement}</span>}
       </div>
 
       {(error || hint) && (
-        <p
-          className={`mt-1.5 text-xs ${error ? "text-rose-500" : "text-slate-400"}`}
-        >
+        <p className={`mt-1.5 text-xs ${error ? "text-rose-500" : "text-slate-400"}`}>
           {error ?? hint}
         </p>
       )}

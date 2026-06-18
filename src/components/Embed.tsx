@@ -43,8 +43,7 @@ export const Embed = ({ ownerId }: { ownerId: string }) => {
             Embed your <span className="text-zinc-400">chat Bot</span>
           </h1>
           <p className="text-lg text-slate-400 leading-relaxed">
-            One script tag. Zero dependencies. Paste it once and you&apos;re
-            live on any website.
+            One script tag. Zero dependencies. Paste it once and you&apos;re live on any website.
           </p>
         </section>
 
@@ -70,9 +69,7 @@ export const Embed = ({ ownerId }: { ownerId: string }) => {
                 {"\n  "}
                 <span className="text-violet-500">src</span>
                 <span className="text-slate-400">=</span>
-                <span className="text-orange-400">
-                  &quot;{ENV.API_URI}/chat_bot.js&quot;
-                </span>
+                <span className="text-orange-400">&quot;{ENV.API_URI}/chat_bot.js&quot;</span>
                 {"\n  "}
                 <span className="text-violet-500">data-owner-id</span>
                 <span className="text-slate-400">=</span>
@@ -93,9 +90,7 @@ export const Embed = ({ ownerId }: { ownerId: string }) => {
         </section>
 
         <section className="mb-16">
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 mb-7">
-            How to integrate
-          </h2>
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 mb-7">How to integrate</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {steps.map((s) => (
               <div
@@ -111,9 +106,7 @@ export const Embed = ({ ownerId }: { ownerId: string }) => {
                 <h3 className="relative text-[15px] font-semibold text-slate-800 tracking-tight mb-2">
                   {s.title}
                 </h3>
-                <p className="relative text-[13px] text-slate-400 leading-relaxed">
-                  {s.desc}
-                </p>
+                <p className="relative text-[13px] text-slate-400 leading-relaxed">{s.desc}</p>
               </div>
             ))}
           </div>
@@ -121,9 +114,7 @@ export const Embed = ({ ownerId }: { ownerId: string }) => {
 
         <section className="">
           <div className="flex items-center gap-4 mb-7">
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">
-              Live Preview
-            </h2>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">Live Preview</h2>
             <span className="flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 font-mono text-[11px] text-emerald-600">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Live
@@ -159,9 +150,7 @@ export const Embed = ({ ownerId }: { ownerId: string }) => {
                   <rect x="3" y="3" width="18" height="18" rx="2" />
                   <path d="M3 9h18M9 21V9" />
                 </svg>
-                <span className="font-mono text-[13px]">
-                  Your website content
-                </span>
+                <span className="font-mono text-[13px]">Your website content</span>
               </div>
 
               {/* Simulated widget button */}
