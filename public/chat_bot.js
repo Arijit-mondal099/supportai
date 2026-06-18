@@ -1,11 +1,21 @@
 (async function () {
-  const API_URI = "https://supportai-seven.vercel.app/api/chat";
   const script_tag = document.currentScript;
+  const bot_id = script_tag.getAttribute("data-bot-id");
   const owner_id = script_tag.getAttribute("data-owner-id");
+  // Derive the API origin from the script's own URL so the widget works on any deployment.
+  const API_ORIGIN = new URL(script_tag.src).origin;
+  const API_URI = API_ORIGIN + "/api/chat";
 
-  if (!owner_id) {
-    alert("Oops! Owner ID not found. Please contact the website administrator.");
+  if (!bot_id && !owner_id) {
+    alert("Oops! Bot ID not found. Please contact the website administrator.");
     return;
+  }
+
+  // Stable anonymous session id so a visitor's messages group into one conversation.
+  let session_id = localStorage.getItem("supportai_session_id");
+  if (!session_id) {
+    session_id = "s_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem("supportai_session_id", session_id);
   }
 
   /* ----------------------------- CSS --------------------------------- */
@@ -376,7 +386,12 @@
       const res = await fetch(API_URI, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: text, ownerId: owner_id }),
+        body: JSON.stringify({
+          prompt: text,
+          botId: bot_id,
+          ownerId: owner_id,
+          sessionId: session_id,
+        }),
       });
 
       const val = await res.json();

@@ -1,7 +1,15 @@
-export default function EmbedTabPage() {
-  return (
-    <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center text-sm text-slate-400">
-      Embed snippet — coming soon
-    </div>
-  );
+import { redirect } from "next/navigation";
+import { requireOwner } from "@/lib/auth";
+import { getChatbot } from "@/lib/chatbots";
+import { Embed } from "@/components/Embed";
+
+export default async function BotEmbedPage({ params }: { params: Promise<{ botId: string }> }) {
+  const owner = await requireOwner();
+  if (!owner) redirect("/api/auth/login");
+
+  const { botId } = await params;
+  const bot = await getChatbot(owner.ownerId, botId);
+  if (!bot) redirect("/dashboard");
+
+  return <Embed botId={bot._id} />;
 }
