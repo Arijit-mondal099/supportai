@@ -1,5 +1,77 @@
 @import "tailwindcss";
 
+/* Custom fonts served straight from /public/fonts */
+@font-face {
+  font-family: "NormalFont";
+  src: url("/fonts/normal-font.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HeadingFont";
+  src: url("/fonts/heading-font.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TitleFont";
+  src: url("/fonts/title-font.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "NormalFont", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "HeadingFont", ui-sans-serif, system-ui, sans-serif;
+  --font-title: "TitleFont", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "NormalFont", ui-sans-serif, system-ui, sans-serif;
+
+  /* Warm neutral palette — overrides Tailwind's cool zinc/gray so the whole
+     site picks up the cream-canvas / warm-text look without per-element edits. */
+  --color-zinc-50: #f7f5ef;
+  --color-zinc-100: #e7e3d8;
+  --color-zinc-200: #ddd8cb;
+  --color-zinc-300: #cfc8b8;
+  --color-zinc-400: #948f82;
+  --color-zinc-500: #6e6a60; /* muted / secondary copy */
+  --color-zinc-700: #4a463d;
+  --color-zinc-800: #2a2823;
+  --color-zinc-900: #1b1a17; /* primary text & dark surfaces */
+  --color-zinc-950: #121110;
+
+  --color-gray-50: #f3f0e8;
+  --color-gray-100: #e9e5db;
+  --color-gray-200: #ddd8cb;
+}
+
 html {
   @apply scroll-smooth;
+}
+
+/* Body uses the normal font; only section titles (h1/h2) use the heading font.
+   Smaller headings like card titles (h3+) stay in the normal font. */
+body {
+  font-family: var(--font-sans);
+}
+
+h1,
+h2 {
+  font-family: var(--font-heading);
+}
+
+/* Warm cream base + fine diagonal pinstripe hatch used on the landing page. */
+.bg-pinstripe {
+  background-color: #ece9e1;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(27, 26, 23, 0.05) 0,
+    rgba(27, 26, 23, 0.05) 1px,
+    transparent 1px,
+    transparent 9px
+  );
 }

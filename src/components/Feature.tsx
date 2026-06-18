@@ -1,60 +1,78 @@
 "use client";
 
 import { motion } from "motion/react";
+import { ChevronRight, Clock, TrendingDown, Zap, Settings } from "lucide-react";
+
+const features = [
+  {
+    icon: Clock,
+    title: "24/7 Availability",
+    desc: "Round-the-clock support without human limitations",
+  },
+  {
+    icon: TrendingDown,
+    title: "Cost Reduction",
+    desc: "Reduce support costs by up to 60% with automated responses",
+  },
+  {
+    icon: Zap,
+    title: "Fast Response Time",
+    desc: "Instant answers to customer queries in milliseconds",
+  },
+  {
+    icon: Settings,
+    title: "Admin Controlled",
+    desc: "Full control over knowledge, tone, and escalation rules",
+  },
+];
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { type: "spring" as const, bounce: 0.3, duration: 0.6 },
+};
 
 export const Feature = () => {
-  const features = [
-    {
-      id: 1,
-      title: "24/7 Availability",
-      description: "Round-the-clock support without human limitations",
-    },
-    {
-      id: 2,
-      title: "Cost Reduction",
-      description: "Reduce support costs by up to 60% with automated responses",
-    },
-    {
-      id: 3,
-      title: "Fast Response Time",
-      description: "Instant answers to customer queries in milliseconds",
-    },
-    {
-      id: 4,
-      title: "Admin Controlled",
-      description:
-        "Lorem ipsum dolor, adipisci quisquam veritatis ratione animi.",
-    },
-  ];
-
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", bounce: 0.5, duration: 0.5 }}
-      id="features"
-      className="max-w-7xl mx-auto mb-32 px-2 text-center"
-    >
-      <h1 className="text-4xl font-bold text-zinc-900 mb-32">
-        Why Businesses Choose Support<span className="text-zinc-400">AI</span>
-      </h1>
+    <section id="features" className="scroll-mt-24 max-w-7xl mx-auto mb-32 px-4">
+      <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto mb-14">
+        <span className="inline-flex items-center gap-2 bg-gray-50 border border-zinc-200 rounded-xl pl-3 pr-1 py-1 shadow-sm">
+          <span className="flex items-center gap-2 font-title text-[10px] font-normal uppercase tracking-tight text-zinc-900">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+            WHY SUPPORTAI
+          </span>
+          <span className="flex items-center justify-center h-6 w-6 rounded-md border border-zinc-200 bg-zinc-100 text-zinc-700">
+            <ChevronRight className="w-4 h-4" />
+          </span>
+        </span>
+        <h2 className="mt-6 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-900 leading-[1.08] sm:leading-[1.05]">
+          Why Businesses Choose Support<span className="text-zinc-400">AI</span>
+        </h2>
+        <p className="mt-4 text-base sm:text-lg text-zinc-500">
+          The tools you need to deliver fast, accurate, on-brand support at scale.
+        </p>
+      </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {features.map((f, i) => (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.05, y: -20 }}
-            transition={{ type: "spring", bounce: 0.5, delay: i * 0.2 }}
-            viewport={{ once: true }}
-            key={f.id}
-            className="p-6 rounded-2xl border border-gray-200 shadow-lg flex flex-col justify-center gap-4 text-left"
-          >
-            <h2 className="text-xl font-semibold text-zinc-800">{f.title}</h2>
-            <p className="text-sm font-medium text-zinc-500">{f.description}</p>
-          </motion.div>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {features.map((f, i) => {
+          const Icon = f.icon;
+          return (
+            <motion.div
+              key={f.title}
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: i * 0.08 }}
+              className="group rounded-3xl border border-zinc-200 bg-gray-50 p-6 sm:p-7 shadow-sm transition-all hover:-translate-y-1 hover:border-zinc-300 hover:shadow-md"
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-900 transition-colors group-hover:bg-zinc-900 group-hover:text-white group-hover:border-zinc-900">
+                <Icon className="h-5 w-5" />
+              </div>
+              <h3 className="mt-5 text-lg font-bold tracking-tight text-zinc-900">{f.title}</h3>
+              <p className="mt-2 text-sm text-zinc-500 leading-relaxed">{f.desc}</p>
+            </motion.div>
+          );
+        })}
       </div>
-    </motion.section>
+    </section>
   );
 };
