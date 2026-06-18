@@ -1,13 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Bot, LogOut, Plus, Settings } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { Bot, Check, LogOut, Plus, Settings, Trash2, X } from "lucide-react";
 import type { SerializedBot } from "@/lib/chatbots";
+import { apiClient } from "@/lib/axios";
 import { CreateBotButton } from "./CreateBotButton";
 
 export const Sidebar = ({ bots, email }: { bots: SerializedBot[]; email: string }) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    try {
+      const { data } = await apiClient.delete(`/api/chatbots/${id}`);
+      if (data.success) {
+        setConfirmId(null);
+        if (pathname.startsWith(`/dashboard/bots/${id}`)) router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
@@ -23,27 +44,68 @@ export const Sidebar = ({ bots, email }: { bots: SerializedBot[]; email: string 
 
       {/* Bots */}
       <div className="flex-1 overflow-y-auto p-3">
-        <span className="block px-2 pb-2 text-[11px] font-semibold font-title uppercase tracking-widest text-slate-400">
+        <span className="block px-2 pb-2 font-title text-[11px] font-semibold uppercase tracking-widest text-slate-400">
           Chatbots
         </span>
         <nav className="space-y-1">
           {bots.map((b) => {
             const active = pathname.startsWith(`/dashboard/bots/${b._id}`);
+            const confirming = confirmId === b._id;
             return (
-              <Link
+              <div
                 key={b._id}
-                href={`/dashboard/bots/${b._id}`}
-                className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition ${
+                className={`group relative flex items-center rounded-xl transition ${
                   active ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"
                 }`}
               >
-                <span
-                  className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-                    b.status === "live" ? "bg-emerald-400" : "bg-slate-300"
-                  }`}
-                />
-                <span className="flex-1 truncate font-medium">{b.name}</span>
-              </Link>
+                <Link
+                  href={`/dashboard/bots/${b._id}`}
+                  className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2.5 text-sm"
+                >
+                  <span
+                    className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                      b.status === "live" ? "bg-emerald-400" : "bg-slate-300"
+                    }`}
+                  />
+                  <span className="flex-1 truncate font-medium">{b.name}</span>
+                </Link>
+
+                {confirming ? (
+                  <span className="flex shrink-0 items-center gap-0.5 pr-2">
+                    <button
+                      onClick={() => handleDelete(b._id)}
+                      disabled={deletingId === b._id}
+                      aria-label="Confirm delete"
+                      className="cursor-pointer rounded-md p-1 text-rose-500 transition hover:bg-rose-50 disabled:opacity-50"
+                    >
+                      <Check size={14} />
+                    </button>
+                    <button
+                      onClick={() => setConfirmId(null)}
+                      aria-label="Cancel delete"
+                      className={`cursor-pointer rounded-md p-1 transition ${
+                        active
+                          ? "text-white/70 hover:bg-white/10"
+                          : "text-slate-400 hover:bg-slate-200"
+                      }`}
+                    >
+                      <X size={14} />
+                    </button>
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => setConfirmId(b._id)}
+                    aria-label="Delete chatbot"
+                    className={`mr-2 shrink-0 cursor-pointer rounded-md p-1 opacity-0 transition group-hover:opacity-100 ${
+                      active
+                        ? "text-white/70 hover:bg-white/10"
+                        : "text-slate-400 hover:text-rose-500"
+                    }`}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
             );
           })}
           {bots.length === 0 && (
