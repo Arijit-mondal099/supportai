@@ -5,7 +5,9 @@ export interface IChatbot {
   name: string;
   status: "draft" | "live";
   supportEmail: string;
-  /** Optional per-bot Gemini key; falls back to the account-level key when empty. */
+  /** AI provider used by this bot. */
+  provider: "gemini" | "openai";
+  /** This bot's own API key; falls back to the account-level key when empty. */
   apiKeyOverride?: string;
   businessInfo: {
     businessName: string;
@@ -41,6 +43,7 @@ const chatbotSchema = new Schema<IChatbot>(
     name: { type: String, required: true, default: "Untitled chatbot", trim: true },
     status: { type: String, enum: ["draft", "live"], default: "draft" },
     supportEmail: { type: String, lowercase: true, trim: true, default: "" },
+    provider: { type: String, enum: ["gemini", "openai"], default: "gemini" },
     apiKeyOverride: { type: String, default: "" },
     businessInfo: {
       businessName: { type: String, default: "" },

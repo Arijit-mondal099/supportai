@@ -67,7 +67,8 @@ const run = async () => {
       name: b.botInfo?.botName || "Untitled chatbot",
       status: "live",
       supportEmail: b.supportEmail ?? "",
-      apiKeyOverride: "",
+      provider: "gemini",
+      apiKeyOverride: b.apiKey ?? "",
       businessInfo: b.businessInfo ?? { businessName: "", industry: "", description: "" },
       botInfo: b.botInfo ?? {
         botName: "",

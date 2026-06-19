@@ -15,9 +15,18 @@ export interface SerializedBot {
     displayName: string;
     welcomeMessage: string;
   };
+  provider: "gemini" | "openai";
+  hasApiKey: boolean;
+  apiKeyMasked: string;
   createdAt: string | null;
   updatedAt: string | null;
 }
+
+const maskKey = (key: string): string => {
+  if (!key) return "";
+  if (key.length <= 4) return "••••";
+  return `${"•".repeat(Math.min(key.length - 4, 24))}${key.slice(-4)}`;
+};
 
 // Shape a lean/hydrated Mongo doc into a plain, client-serializable object (no secrets).
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,6 +55,9 @@ export const serializeBot = (bot: any): SerializedBot => {
       displayName: look.displayName ?? APPEARANCE_DEFAULTS.displayName,
       welcomeMessage: look.welcomeMessage ?? APPEARANCE_DEFAULTS.welcomeMessage,
     },
+    provider: bot.provider === "openai" ? "openai" : "gemini",
+    hasApiKey: !!(bot.apiKeyOverride as string),
+    apiKeyMasked: maskKey((bot.apiKeyOverride as string) ?? ""),
     createdAt: bot.createdAt ? new Date(bot.createdAt as string).toISOString() : null,
     updatedAt: bot.updatedAt ? new Date(bot.updatedAt as string).toISOString() : null,
   };

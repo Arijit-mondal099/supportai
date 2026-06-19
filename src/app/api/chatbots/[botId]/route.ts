@@ -1,3 +1,4 @@
+import { normalizeProvider } from "@/lib/ai";
 import { requireOwner } from "@/lib/auth";
 import { db_connection } from "@/lib/db";
 import { getChatbot, serializeBot } from "@/lib/chatbots";
@@ -21,6 +22,8 @@ interface UpdateBody {
   name?: string;
   status?: "draft" | "live";
   supportEmail?: string;
+  provider?: "gemini" | "openai";
+  apiKey?: string;
   businessInfo?: Partial<{ businessName: string; industry: string; description: string }>;
   botInfo?: Partial<{ botName: string; communicationTone: string; personalityDescription: string }>;
   appearance?: Partial<{
@@ -58,6 +61,8 @@ export async function PUT(request: NextRequest, { params }: Params) {
   if (typeof body.name === "string") bot.name = body.name.trim() || "Untitled chatbot";
   if (body.status === "draft" || body.status === "live") bot.status = body.status;
   if (typeof body.supportEmail === "string") bot.supportEmail = body.supportEmail;
+  if (body.provider) bot.provider = normalizeProvider(body.provider);
+  if (typeof body.apiKey === "string") bot.apiKeyOverride = body.apiKey.trim();
 
   if (body.businessInfo) {
     bot.businessInfo.businessName = body.businessInfo.businessName ?? bot.businessInfo.businessName;
