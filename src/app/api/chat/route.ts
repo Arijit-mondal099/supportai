@@ -21,11 +21,13 @@ const HISTORY_LIMIT = 20;
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, botId, ownerId, sessionId } = (await request.json()) as {
+    const { prompt, botId, ownerId, sessionId, preview, history } = (await request.json()) as {
       prompt?: string;
       botId?: string;
       ownerId?: string;
       sessionId?: string;
+      preview?: boolean;
+      history?: { role: "user" | "model"; text: string }[];
     };
 
     if (!prompt?.trim() || (!botId?.trim() && !ownerId?.trim())) {
@@ -60,19 +62,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Replay prior messages of this session for multi-turn context.
-    const conversation = sessionId?.trim()
-      ? await ConversationModel.findOne({ botId: bot._id, sessionId })
-      : null;
-
+    // Replay prior turns for multi-turn context. Preview (playground) chats send
+    // their history in the request and are never persisted; embedded chats load
+    // it from the stored conversation.
     const priorMessages = [];
-    if (conversation) {
-      const prev = await MessageModel.find({ conversationId: conversation._id })
-        .sort({ createdAt: 1 })
-        .limit(HISTORY_LIMIT)
-        .lean();
-      for (const m of prev) {
+    if (preview) {
+      for (const m of (history ?? []).slice(-HISTORY_LIMIT)) {
         priorMessages.push(m.role === "model" ? new AIMessage(m.text) : new HumanMessage(m.text));
+      }
+    } else if (sessionId?.trim()) {
+      const conversation = await ConversationModel.findOne({ botId: bot._id, sessionId });
+      if (conversation) {
+        const prev = await MessageModel.find({ conversationId: conversation._id })
+          .sort({ createdAt: 1 })
+          .limit(HISTORY_LIMIT)
+          .lean();
+        for (const m of prev) {
+          priorMessages.push(m.role === "model" ? new AIMessage(m.text) : new HumanMessage(m.text));
+        }
       }
     }
 
@@ -109,7 +116,8 @@ export async function POST(request: NextRequest) {
             .join("");
 
     // Persist the exchange (best-effort; never fail the reply on a logging error).
-    if (sessionId?.trim()) {
+    // Preview/playground chats are never stored.
+    if (!preview && sessionId?.trim()) {
       try {
         const now = new Date();
         const convo = await ConversationModel.findOneAndUpdate(
