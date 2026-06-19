@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 const buildTabs = (botId: string) => [
   { label: "Overview", href: `/dashboard/bots/${botId}`, exact: true },
+  { label: "Playground", href: `/dashboard/bots/${botId}/playground` },
   { label: "Config", href: `/dashboard/bots/${botId}/config` },
   { label: "Knowledge", href: `/dashboard/bots/${botId}/knowledge` },
   { label: "Appearance", href: `/dashboard/bots/${botId}/appearance` },
