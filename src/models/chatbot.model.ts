@@ -6,8 +6,10 @@ export interface IChatbot {
   status: "draft" | "live";
   supportEmail: string;
   /** AI provider used by this bot. */
-  provider: "gemini" | "openai";
-  /** This bot's own API key; falls back to the account-level key when empty. */
+  provider: "gemini" | "openai" | "anthropic" | "groq";
+  /** Specific model/version for the provider (empty = provider default). */
+  model: string;
+  /** This bot's own API key. */
   apiKeyOverride?: string;
   businessInfo: {
     businessName: string;
@@ -43,7 +45,12 @@ const chatbotSchema = new Schema<IChatbot>(
     name: { type: String, required: true, default: "Untitled chatbot", trim: true },
     status: { type: String, enum: ["draft", "live"], default: "draft" },
     supportEmail: { type: String, lowercase: true, trim: true, default: "" },
-    provider: { type: String, enum: ["gemini", "openai"], default: "gemini" },
+    provider: {
+      type: String,
+      enum: ["gemini", "openai", "anthropic", "groq"],
+      default: "gemini",
+    },
+    model: { type: String, default: "" },
     apiKeyOverride: { type: String, default: "" },
     businessInfo: {
       businessName: { type: String, default: "" },

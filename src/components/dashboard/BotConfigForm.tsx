@@ -6,10 +6,26 @@ import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
 import { apiClient } from "@/lib/axios";
 import type { SerializedBot } from "@/lib/chatbots";
+import {
+  defaultModel,
+  INDUSTRIES,
+  MODELS,
+  PROVIDERS,
+  type Provider,
+  TONES,
+  withCurrent,
+} from "@/lib/options";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
@@ -22,10 +38,19 @@ export const BotConfigForm = ({ bot }: { bot: SerializedBot }) => {
   const [supportEmail, setSupportEmail] = useState(bot.supportEmail);
   const [businessInfo, setBusinessInfo] = useState(bot.businessInfo);
   const [personaInfo, setPersonaInfo] = useState(bot.botInfo);
-  const [provider, setProvider] = useState<"gemini" | "openai">(bot.provider);
+  const [provider, setProvider] = useState<Provider>(bot.provider);
+  const [model, setModel] = useState(bot.model || defaultModel(bot.provider));
   const [apiKey, setApiKey] = useState("");
   const [maskedKey, setMaskedKey] = useState(bot.apiKeyMasked);
   const [hasKey, setHasKey] = useState(bot.hasApiKey);
+
+  const changeProvider = (p: Provider) => {
+    setProvider(p);
+    setModel(defaultModel(p));
+  };
+
+  const industryOptions = withCurrent(INDUSTRIES, businessInfo.industry);
+  const toneOptions = withCurrent(TONES, personaInfo.communicationTone);
 
   const save = async () => {
     setSaving(true);
@@ -35,6 +60,7 @@ export const BotConfigForm = ({ bot }: { bot: SerializedBot }) => {
         status,
         supportEmail,
         provider,
+        model,
         ...(apiKey.trim() ? { apiKey: apiKey.trim() } : {}),
         businessInfo,
         botInfo: personaInfo,
@@ -117,13 +143,22 @@ export const BotConfigForm = ({ bot }: { bot: SerializedBot }) => {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="industry">Industry</Label>
-              <Input
-                id="industry"
+              <Label>Industry</Label>
+              <Select
                 value={businessInfo.industry}
-                onChange={(e) => setBusinessInfo({ ...businessInfo, industry: e.target.value })}
-                placeholder="E-commerce, SaaS…"
-              />
+                onValueChange={(v) => setBusinessInfo({ ...businessInfo, industry: v as string })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select industry" />
+                </SelectTrigger>
+                <SelectContent>
+                  {industryOptions.map((o) => (
+                    <SelectItem key={o} value={o}>
+                      {o}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-1.5">
@@ -167,15 +202,24 @@ export const BotConfigForm = ({ bot }: { bot: SerializedBot }) => {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="tone">Communication tone</Label>
-              <Input
-                id="tone"
+              <Label>Communication tone</Label>
+              <Select
                 value={personaInfo.communicationTone}
-                onChange={(e) =>
-                  setPersonaInfo({ ...personaInfo, communicationTone: e.target.value })
+                onValueChange={(v) =>
+                  setPersonaInfo({ ...personaInfo, communicationTone: v as string })
                 }
-                placeholder="Friendly, professional…"
-              />
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select tone" />
+                </SelectTrigger>
+                <SelectContent>
+                  {toneOptions.map((o) => (
+                    <SelectItem key={o} value={o}>
+                      {o}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-1.5">
@@ -197,27 +241,39 @@ export const BotConfigForm = ({ bot }: { bot: SerializedBot }) => {
       <Card>
         <CardHeader>
           <CardTitle>Model &amp; API key</CardTitle>
-          <CardDescription>This agent uses its own key to talk to the model.</CardDescription>
+          <CardDescription>This agent uses its own provider, model, and key.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Provider</Label>
-            <div className="grid max-w-sm grid-cols-2 gap-2">
-              {(["gemini", "openai"] as const).map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setProvider(p)}
-                  className={cn(
-                    "cursor-pointer rounded-lg border px-4 py-2.5 text-sm font-medium transition",
-                    provider === p
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-background hover:bg-muted",
-                  )}
-                >
-                  {p === "gemini" ? "Google Gemini" : "OpenAI"}
-                </button>
-              ))}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label>Provider</Label>
+              <Select value={provider} onValueChange={(v) => changeProvider(v as Provider)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PROVIDERS.map((p) => (
+                    <SelectItem key={p.value} value={p.value}>
+                      {p.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Model</Label>
+              <Select value={model} onValueChange={(v) => setModel(v as string)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MODELS[provider].map((m) => (
+                    <SelectItem key={m.value} value={m.value}>
+                      {m.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-1.5">

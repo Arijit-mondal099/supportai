@@ -1,5 +1,6 @@
 import { isValidObjectId } from "mongoose";
 import { db_connection } from "./db";
+import { normalizeProvider, type Provider } from "./options";
 import { APPEARANCE_DEFAULTS, ChatbotModel } from "@/models/chatbot.model";
 
 export interface SerializedBot {
@@ -15,7 +16,8 @@ export interface SerializedBot {
     displayName: string;
     welcomeMessage: string;
   };
-  provider: "gemini" | "openai";
+  provider: Provider;
+  model: string;
   hasApiKey: boolean;
   apiKeyMasked: string;
   createdAt: string | null;
@@ -55,7 +57,8 @@ export const serializeBot = (bot: any): SerializedBot => {
       displayName: look.displayName ?? APPEARANCE_DEFAULTS.displayName,
       welcomeMessage: look.welcomeMessage ?? APPEARANCE_DEFAULTS.welcomeMessage,
     },
-    provider: bot.provider === "openai" ? "openai" : "gemini",
+    provider: normalizeProvider(bot.provider as string),
+    model: (bot.model as string) ?? "",
     hasApiKey: !!(bot.apiKeyOverride as string),
     apiKeyMasked: maskKey((bot.apiKeyOverride as string) ?? ""),
     createdAt: bot.createdAt ? new Date(bot.createdAt as string).toISOString() : null,

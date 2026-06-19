@@ -1,6 +1,7 @@
 import { requireOwner } from "@/lib/auth";
 import { db_connection } from "@/lib/db";
 import { extractTextFromFile, UnsupportedFileError } from "@/lib/extractFile";
+import { supportsEmbeddings } from "@/lib/options";
 import { resolveProviderKey } from "@/lib/providerKey";
 import { addDocuments, isRagConfigured, splitText } from "@/lib/rag";
 import { ChatbotModel } from "@/models/chatbot.model";
@@ -72,7 +73,12 @@ export async function POST(request: NextRequest, { params }: Params) {
   if (!bot) return notFound();
 
   const { provider, apiKey } = resolveProviderKey(bot);
-  if (!apiKey) return bad("Add an API key in this bot's Model & Key tab first.");
+  if (!apiKey) return bad("Add an API key in this bot's Model & key tab first.");
+  if (!supportsEmbeddings(provider)) {
+    return bad(
+      "The knowledge base needs a Gemini or OpenAI agent — Claude and Groq don't provide embeddings.",
+    );
+  }
 
   // Resolve the raw text + title + source type from a file upload (multipart)
   // or a JSON body (pasted text / URL).

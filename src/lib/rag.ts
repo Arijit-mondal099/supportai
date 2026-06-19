@@ -2,8 +2,9 @@ import { Document } from "@langchain/core/documents";
 import { PineconeStore } from "@langchain/pinecone";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { Pinecone } from "@pinecone-database/pinecone";
-import { getEmbeddings, type Provider } from "./ai";
+import { getEmbeddings } from "./ai";
 import { ENV } from "./env";
+import type { Provider } from "./options";
 
 export const isRagConfigured = (): boolean => !!(ENV.PINECONE_API_KEY && ENV.PINECONE_INDEX);
 

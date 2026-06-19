@@ -1,4 +1,4 @@
-import { normalizeProvider } from "@/lib/ai";
+import { normalizeProvider } from "@/lib/options";
 import { requireOwner } from "@/lib/auth";
 import { db_connection } from "@/lib/db";
 import { listChatbots, serializeBot } from "@/lib/chatbots";
@@ -13,7 +13,8 @@ interface CreateBody {
   name?: string;
   status?: "draft" | "live";
   supportEmail?: string;
-  provider?: "gemini" | "openai";
+  provider?: "gemini" | "openai" | "anthropic" | "groq";
+  model?: string;
   apiKey?: string;
   businessInfo?: Partial<{ businessName: string; industry: string; description: string }>;
   botInfo?: Partial<{ botName: string; communicationTone: string; personalityDescription: string }>;
@@ -61,6 +62,7 @@ export async function POST(request: NextRequest) {
     status: body.status === "live" ? "live" : "draft",
     supportEmail,
     provider: normalizeProvider(body.provider),
+    model: typeof body.model === "string" ? body.model : "",
     apiKeyOverride: typeof body.apiKey === "string" ? body.apiKey.trim() : "",
     businessInfo,
     botInfo,

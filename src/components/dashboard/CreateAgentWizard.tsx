@@ -6,16 +6,22 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, Loader2, Sparkles } from "lucide-react";
 import { apiClient } from "@/lib/axios";
+import { defaultModel, INDUSTRIES, MODELS, PROVIDERS, type Provider, TONES } from "@/lib/options";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["Basics", "Persona", "Model & key", "Review"];
-
-type Provider = "gemini" | "openai";
 
 export function CreateAgentWizard() {
   const router = useRouter();
@@ -31,8 +37,14 @@ export function CreateAgentWizard() {
   const [tone, setTone] = useState("");
   const [personality, setPersonality] = useState("");
   const [provider, setProvider] = useState<Provider>("gemini");
+  const [model, setModel] = useState(defaultModel("gemini"));
   const [apiKey, setApiKey] = useState("");
   const [makeLive, setMakeLive] = useState(false);
+
+  const changeProvider = (p: Provider) => {
+    setProvider(p);
+    setModel(defaultModel(p));
+  };
 
   const canNext =
     step === 0
@@ -51,7 +63,8 @@ export function CreateAgentWizard() {
         status: makeLive ? "live" : "draft",
         supportEmail,
         provider,
-        ...(apiKey.trim() ? { apiKey: apiKey.trim() } : {}),
+        model,
+        apiKey: apiKey.trim(),
         businessInfo: { businessName, industry, description },
         botInfo: { botName, communicationTone: tone, personalityDescription: personality },
       });
@@ -68,6 +81,9 @@ export function CreateAgentWizard() {
       setCreating(false);
     }
   };
+
+  const providerLabel = PROVIDERS.find((p) => p.value === provider)?.label ?? "Google Gemini";
+  const modelLabel = MODELS[provider].find((m) => m.value === model)?.label ?? model;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -121,7 +137,7 @@ export function CreateAgentWizard() {
           <CardDescription>
             {step === 0 && "Tell us about your business so the agent stays on-brand."}
             {step === 1 && "Give your agent a name and personality."}
-            {step === 2 && "Choose a provider and add this agent's API key."}
+            {step === 2 && "Choose a provider, model, and add this agent's API key."}
             {step === 3 && "Review and create your agent."}
           </CardDescription>
         </CardHeader>
@@ -148,13 +164,19 @@ export function CreateAgentWizard() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="industry">Industry</Label>
-                  <Input
-                    id="industry"
-                    value={industry}
-                    onChange={(e) => setIndustry(e.target.value)}
-                    placeholder="E-commerce, SaaS…"
-                  />
+                  <Label>Industry</Label>
+                  <Select value={industry} onValueChange={(v) => setIndustry(v as string)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select industry" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INDUSTRIES.map((o) => (
+                        <SelectItem key={o} value={o}>
+                          {o}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="space-y-1.5">
@@ -193,13 +215,19 @@ export function CreateAgentWizard() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="tone">Communication tone</Label>
-                  <Input
-                    id="tone"
-                    value={tone}
-                    onChange={(e) => setTone(e.target.value)}
-                    placeholder="Friendly, professional…"
-                  />
+                  <Label>Communication tone</Label>
+                  <Select value={tone} onValueChange={(v) => setTone(v as string)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select tone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TONES.map((o) => (
+                        <SelectItem key={o} value={o}>
+                          {o}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="space-y-1.5">
@@ -209,7 +237,7 @@ export function CreateAgentWizard() {
                   rows={5}
                   value={personality}
                   onChange={(e) => setPersonality(e.target.value)}
-                  placeholder="How should it greet users, what topics to avoid, edge-case handling…"
+                  placeholder="How it should greet users, topics to avoid, edge-case handling…"
                 />
               </div>
             </>
@@ -217,24 +245,36 @@ export function CreateAgentWizard() {
 
           {step === 2 && (
             <>
-              <div className="space-y-1.5">
-                <Label>Provider</Label>
-                <div className="grid max-w-sm grid-cols-2 gap-2">
-                  {(["gemini", "openai"] as const).map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => setProvider(p)}
-                      className={cn(
-                        "cursor-pointer rounded-lg border px-4 py-2.5 text-sm font-medium transition",
-                        provider === p
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background hover:bg-muted",
-                      )}
-                    >
-                      {p === "gemini" ? "Google Gemini" : "OpenAI"}
-                    </button>
-                  ))}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label>Provider</Label>
+                  <Select value={provider} onValueChange={(v) => changeProvider(v as Provider)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PROVIDERS.map((p) => (
+                        <SelectItem key={p.value} value={p.value}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Model</Label>
+                  <Select value={model} onValueChange={(v) => setModel(v as string)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MODELS[provider].map((m) => (
+                        <SelectItem key={m.value} value={m.value}>
+                          {m.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="space-y-1.5">
@@ -262,8 +302,11 @@ export function CreateAgentWizard() {
                 {[
                   ["Agent name", name || "—"],
                   ["Business", businessName || "—"],
+                  ["Industry", industry || "—"],
                   ["Bot name", botName || "—"],
-                  ["Provider", provider === "openai" ? "OpenAI" : "Google Gemini"],
+                  ["Tone", tone || "—"],
+                  ["Provider", providerLabel],
+                  ["Model", modelLabel],
                   ["API key", apiKey.trim() ? "Set" : "Not set"],
                 ].map(([k, v]) => (
                   <div key={k} className="flex items-center justify-between gap-4 px-4 py-2.5">

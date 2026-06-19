@@ -1,5 +1,6 @@
 import { getChatModel } from "@/lib/ai";
 import { db_connection } from "@/lib/db";
+import { supportsEmbeddings } from "@/lib/options";
 import { resolveProviderKey } from "@/lib/providerKey";
 import { isRagConfigured, retrieve } from "@/lib/rag";
 import { ChatbotModel } from "@/models/chatbot.model";
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { provider, apiKey } = resolveProviderKey(bot);
+    const { provider, apiKey, model } = resolveProviderKey(bot);
     if (!apiKey) {
       return NextResponse.json(
         { success: false, message: "No API key configured for this chatbot." },
@@ -76,8 +77,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Ground the answer in the bot's knowledge base (best-effort).
+    // Only providers with an embeddings API can run retrieval.
     let systemText = bot.knowledge;
-    if (isRagConfigured()) {
+    if (isRagConfigured() && supportsEmbeddings(provider)) {
       try {
         const snippets = await retrieve(provider, apiKey, String(bot._id), prompt, 5);
         if (snippets.length) {
@@ -89,8 +91,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const model = getChatModel(provider, apiKey);
-    const result = await model.invoke([
+    const chatModel = getChatModel(provider, apiKey, model);
+    const result = await chatModel.invoke([
       new SystemMessage(systemText),
       ...priorMessages,
       new HumanMessage(prompt),

@@ -1,43 +1,44 @@
-import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { ChatAnthropic } from "@langchain/anthropic";
 import type { Embeddings } from "@langchain/core/embeddings";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
+import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { ChatGroq } from "@langchain/groq";
+import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { defaultModel, type Provider } from "./options";
 
-export type Provider = "gemini" | "openai";
+const GEMINI_EMBED_MODEL = "text-embedding-004";
+const OPENAI_EMBED_MODEL = "text-embedding-3-small";
 
-// Chat + embedding models per provider (centralised so they're easy to tune).
-const CHAT_MODELS: Record<Provider, string> = {
-  gemini: "gemini-2.0-flash",
-  openai: "gpt-4o-mini",
-};
-
-const EMBED_MODELS: Record<Provider, string> = {
-  gemini: "text-embedding-004",
-  openai: "text-embedding-3-small",
-};
-
-// Pin every provider to the same embedding dimension so a single Pinecone
-// index works for both. Gemini text-embedding-004 is natively 768; OpenAI
-// text-embedding-3-small is reduced to 768 via the `dimensions` option.
+// Pin embedding output to one dimension so a single Pinecone index works across
+// providers. Gemini text-embedding-004 is natively 768; OpenAI is reduced to 768.
 export const EMBED_DIMENSIONS = 768;
 
-export const normalizeProvider = (value?: string): Provider =>
-  value === "openai" ? "openai" : "gemini";
-
-export const getChatModel = (provider: Provider, apiKey: string): BaseChatModel => {
-  if (provider === "openai") {
-    return new ChatOpenAI({ apiKey, model: CHAT_MODELS.openai, temperature: 0.3 });
+export const getChatModel = (provider: Provider, apiKey: string, model?: string): BaseChatModel => {
+  const resolved = model?.trim() || defaultModel(provider);
+  const temperature = 0.3;
+  switch (provider) {
+    case "openai":
+      return new ChatOpenAI({ apiKey, model: resolved, temperature });
+    case "anthropic":
+      return new ChatAnthropic({ apiKey, model: resolved, temperature });
+    case "groq":
+      return new ChatGroq({ apiKey, model: resolved, temperature });
+    default:
+      return new ChatGoogleGenerativeAI({ apiKey, model: resolved, temperature });
   }
-  return new ChatGoogleGenerativeAI({ apiKey, model: CHAT_MODELS.gemini, temperature: 0.3 });
 };
 
+// Only Gemini and OpenAI provide embeddings; Anthropic/Groq do not.
 export const getEmbeddings = (provider: Provider, apiKey: string): Embeddings => {
   if (provider === "openai") {
     return new OpenAIEmbeddings({
       apiKey,
-      model: EMBED_MODELS.openai,
+      model: OPENAI_EMBED_MODEL,
       dimensions: EMBED_DIMENSIONS,
     });
   }
-  return new GoogleGenerativeAIEmbeddings({ apiKey, model: EMBED_MODELS.gemini });
+  if (provider === "gemini") {
+    return new GoogleGenerativeAIEmbeddings({ apiKey, model: GEMINI_EMBED_MODEL });
+  }
+  throw new Error(`Embeddings are not supported for provider "${provider}".`);
 };

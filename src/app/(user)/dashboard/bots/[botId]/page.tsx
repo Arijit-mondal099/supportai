@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Clock, MessageSquare, Users } from "lucide-react";
 import { requireOwner } from "@/lib/auth";
 import { getChatbot } from "@/lib/chatbots";
+import { MODELS, PROVIDERS } from "@/lib/options";
 import { ConversationModel } from "@/models/conversation.model";
 import { MessageModel } from "@/models/message.model";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,8 +46,15 @@ export default async function BotOverview({ params }: { params: Promise<{ botId:
     { label: "Business", value: bot.businessInfo.businessName || "—" },
     { label: "Industry", value: bot.businessInfo.industry || "—" },
     { label: "Support email", value: bot.supportEmail || "—" },
-    { label: "Provider", value: bot.provider === "openai" ? "OpenAI" : "Google Gemini" },
-    { label: "API key", value: bot.hasApiKey ? bot.apiKeyMasked : "Account default" },
+    {
+      label: "Provider",
+      value: PROVIDERS.find((p) => p.value === bot.provider)?.label ?? bot.provider,
+    },
+    {
+      label: "Model",
+      value: MODELS[bot.provider]?.find((m) => m.value === bot.model)?.label || "Default",
+    },
+    { label: "API key", value: bot.hasApiKey ? bot.apiKeyMasked : "Not set" },
   ];
 
   return (
