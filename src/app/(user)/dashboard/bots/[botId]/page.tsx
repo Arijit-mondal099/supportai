@@ -63,7 +63,7 @@ export default async function BotOverview({ params }: { params: Promise<{ botId:
         {stats.map((s) => {
           const Icon = s.icon;
           return (
-            <Card key={s.label}>
+            <Card key={s.label} className="transition-all hover:-translate-y-0.5 hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {s.label}
@@ -78,7 +78,7 @@ export default async function BotOverview({ params }: { params: Promise<{ botId:
         })}
       </div>
 
-      <Card>
+      <Card className="transition-all hover:shadow-md">
         <CardHeader>
           <CardTitle className="text-base">Details</CardTitle>
         </CardHeader>

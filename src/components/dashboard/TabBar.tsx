@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 const buildTabs = (botId: string) => [
@@ -34,7 +35,11 @@ export const TabBar = ({ botId }: { botId: string }) => {
           >
             {t.label}
             {active && (
-              <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary" />
+              <motion.span
+                layoutId="tab-indicator"
+                className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary"
+                transition={{ type: "spring", bounce: 0.3, duration: 0.4 }}
+              />
             )}
           </Link>
         );
