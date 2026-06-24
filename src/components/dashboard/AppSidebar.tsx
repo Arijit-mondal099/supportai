@@ -20,8 +20,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -115,15 +113,10 @@ export function AppSidebar({ email, agentCount }: { email: string; agentCount: n
                         {initial}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="truncate">{email || "Account"}</span>
                   </SidebarMenuButton>
                 }
               />
               <DropdownMenuContent side="top" align="start" className="w-56">
-                <DropdownMenuLabel className="truncate font-normal text-muted-foreground">
-                  {email}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem render={<a href="/api/auth/logout" />}>
                   <LogOut className="mr-2 h-4 w-4" /> Log out
                 </DropdownMenuItem>
