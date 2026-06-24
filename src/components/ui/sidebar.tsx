@@ -494,6 +494,7 @@ function SidebarMenuButton({
     defaultTagName: "button",
     props: mergeProps<"button">(
       {
+        suppressHydrationWarning: true,
         className: cn(sidebarMenuButtonVariants({ variant, size }), className),
       },
       props,
