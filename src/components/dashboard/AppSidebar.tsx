@@ -46,8 +46,8 @@ export function AppSidebar({ agentCount }: { agentCount: number }) {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-1 py-1.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Bot size={17} />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary">
+            <img src="/favicon.png" alt="SupportAI" className="h-full w-full object-cover" />
           </div>
           <span className="font-title text-base font-bold tracking-tight group-data-[collapsible=icon]:hidden">
             Support<span className="text-muted-foreground">AI</span>
