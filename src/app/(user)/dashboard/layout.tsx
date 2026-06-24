@@ -4,7 +4,6 @@ import { listChatbots } from "@/lib/chatbots";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { PageTransition } from "@/components/dashboard/PageTransition";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata = {
@@ -20,10 +19,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <SidebarProvider>
       <AppSidebar agentCount={bots.length} />
-      <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-1 h-4" />
+      <SidebarInset className="max-h-svh overflow-y-auto">
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-sidebar px-4">
+          <SidebarTrigger className="border-r border-border" />
           <span className="text-sm font-medium">Dashboard</span>
         </header>
         <PageTransition>
