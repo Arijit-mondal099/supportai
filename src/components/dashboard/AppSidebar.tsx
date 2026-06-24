@@ -17,6 +17,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Image from "next/image";
 
 const nav = [
   {
@@ -45,9 +46,9 @@ export function AppSidebar({ agentCount }: { agentCount: number }) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-1 py-1.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Bot size={17} />
+        <div className="flex items-center gap-2 px-0.5 py-1.5">
+          <div className="flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+            <Image src="/favicon.png" width={100} height={100} alt="SupportAI" className="h-7 w-7" />
           </div>
           <span className="font-title text-base font-bold tracking-tight group-data-[collapsible=icon]:hidden">
             Support<span className="text-muted-foreground">AI</span>

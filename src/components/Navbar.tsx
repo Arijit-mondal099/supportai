@@ -70,8 +70,11 @@ export const Navbar = ({ email }: { email: string | null | undefined }) => {
       <nav className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4 border-r border-l border-zinc-500/50">
         <div className="flex items-center gap-4 sm:gap-10">
           <Link href="/" aria-label="SupportAI home" className="shrink-0">
-            <span className="font-title text-lg font-bold tracking-tight text-zinc-900">
-              Support<span className="text-zinc-400">AI</span>
+            <span className="flex items-center gap-2">
+              <img src="/favicon.png" alt="" className="h-8 w-8" />
+              <span className="font-title text-lg font-bold tracking-tight text-zinc-900">
+                Support<span className="text-zinc-400">AI</span>
+              </span>
             </span>
           </Link>
 
