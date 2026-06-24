@@ -41,7 +41,9 @@ export async function POST(request: NextRequest) {
 
     // Resolve the chatbot by its id (preferred) or, for legacy data-owner-id
     // embeds, fall back to that owner's first live (else first) bot.
-    let bot = botId && isValidObjectId(botId) ? await ChatbotModel.findById(botId) : null;
+    let bot = botId && isValidObjectId(botId)
+      ? await ChatbotModel.findOne({ _id: botId, ...(preview ? {} : { status: "live" }) })
+      : null;
     if (!bot && ownerId) {
       bot = await ChatbotModel.findOne({ ownerId, status: "live" }).sort({ createdAt: 1 });
       if (!bot) bot = await ChatbotModel.findOne({ ownerId }).sort({ createdAt: 1 });

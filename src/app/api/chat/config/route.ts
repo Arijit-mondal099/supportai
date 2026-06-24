@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   }
 
   await db_connection();
-  const bot = await ChatbotModel.findById(botId).select("appearance").lean();
+  const bot = await ChatbotModel.findOne({ _id: botId, status: "live" }).select("appearance").lean();
 
   if (!bot) {
     return NextResponse.json(
