@@ -22,14 +22,14 @@ export default function Loading() {
           <Skeleton className="h-5 w-16" />
         </CardHeader>
         <CardContent>
-          <div className="divide-y divide-border">
+          <dl className="divide-y divide-border">
             {Array.from({ length: 7 }).map((_, i) => (
               <div key={i} className="flex items-center justify-between gap-4 py-2.5">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-4 w-32" />
+                <dt><Skeleton className="h-4 w-24" /></dt>
+                <dd><Skeleton className="h-4 w-32" /></dd>
               </div>
             ))}
-          </div>
+          </dl>
         </CardContent>
       </Card>
     </div>
