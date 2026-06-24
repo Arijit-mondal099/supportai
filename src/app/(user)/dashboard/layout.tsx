@@ -19,7 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <SidebarProvider>
       <AppSidebar agentCount={bots.length} />
-      <SidebarInset className="max-h-svh overflow-y-auto">
+      <SidebarInset className="no-scrollbar max-h-svh overflow-y-auto">
         <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-sidebar px-4">
           <SidebarTrigger className="border-r border-border" />
           <span className="text-sm font-medium">Dashboard</span>
