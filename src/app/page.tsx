@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Feature } from "@/components/Feature";
@@ -11,11 +12,14 @@ import { Footer } from "@/components/Footer";
 import { getUserSession } from "@/lib/getUserSession";
 
 const HomePage = async () => {
-  const session = await getUserSession();
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
 
-  if (session?.user?.email) {
+  if (token) {
     redirect("/dashboard");
   }
+
+  const session = await getUserSession();
 
   return (
     <div className="relative min-h-screen bg-pinstripe text-zinc-900 overflow-x-clip">
