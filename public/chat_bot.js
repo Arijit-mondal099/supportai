@@ -70,8 +70,8 @@
       position: fixed;
       bottom: 104px;
       right: 28px;
-      width: 370px;
-      height: 520px;
+      width: 400px;
+      height: 560px;
       background: var(--cream);
       border-radius: 20px;
       box-shadow:
@@ -281,6 +281,53 @@
       background: var(--paper);
       flex-shrink: 0;
     }
+
+    /* Responsive — small devices (≤480px) */
+    @media (max-width: 480px) {
+      #chatbot-toggle {
+        bottom: 16px;
+        right: 16px;
+        width: 52px;
+        height: 52px;
+      }
+      #chatbot-box {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        height: calc(100vh - 140px);
+        bottom: 84px;
+      }
+      .cb-header {
+        padding: 14px 16px;
+      }
+      #chatbot-messages {
+        padding: 12px;
+      }
+      .cb-msg {
+        max-width: 88%;
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+      .cb-footer {
+        padding: 10px 12px;
+      }
+      #chat-input {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+      #send-btn {
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    /* Responsive — tablets (481px‑768px) */
+    @media (min-width: 481px) and (max-width: 768px) {
+      #chatbot-box {
+        width: 380px;
+      }
+    }
+
   `;
   document.head.appendChild(style);
 
@@ -289,7 +336,8 @@
   button.id = "chatbot-toggle";
   button.setAttribute("aria-label", "Open chat");
   button.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bot-icon lucide-bot"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+    <svg class="icon-chat" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+    <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
   `;
 
   /* ----------------------------- Messages ----------------------------- */
