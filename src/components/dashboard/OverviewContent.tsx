@@ -18,7 +18,7 @@ import { OverviewChart } from "@/components/dashboard/OverviewChart";
 
 const formatDate = (iso: string | null) =>
   iso
-    ? new Date(iso).toLocaleString(undefined, {
+    ? new Date(iso).toLocaleString("en-US", {
         month: "short",
         day: "numeric",
         hour: "2-digit",
@@ -94,7 +94,7 @@ export const OverviewContent = ({
                   <Icon className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold tracking-tight">{s.value.toLocaleString()}</div>
+                  <div className="text-2xl font-bold tracking-tight">{s.value.toLocaleString("en-US")}</div>
                 </CardContent>
               </Card>
             </motion.div>
