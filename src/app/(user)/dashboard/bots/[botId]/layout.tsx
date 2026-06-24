@@ -64,7 +64,7 @@ async function BotHeader({ params }: { params: Promise<{ botId: string }> }) {
         <ChevronLeft className="h-3.5 w-3.5" /> Agents
       </Link>
       <header className="mb-6 flex items-center gap-3">
-        <span className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-gray-50 pl-3 pr-1 py-1 shadow-sm mr-2">
+        <span className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-zinc-200 bg-gray-50 pl-3 pr-1 py-1 shadow-sm mr-2">
           <span className="flex items-center gap-2 font-title text-[10px] font-normal uppercase tracking-tight text-zinc-900">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
             AGENT
@@ -73,13 +73,13 @@ async function BotHeader({ params }: { params: Promise<{ botId: string }> }) {
             <ChevronRight className="w-4 h-4" />
           </span>
         </span>
-        <h1 className="text-2xl font-bold tracking-tight">{bot.name}</h1>
+        <h1 className="min-w-0 truncate text-2xl font-bold tracking-tight">{bot.name}</h1>
         {bot.status === "live" ? (
-          <Badge variant="outline" className="border-emerald-300 bg-emerald-50 text-emerald-700">
+          <Badge variant="outline" className="shrink-0 border-emerald-300 bg-emerald-50 text-emerald-700">
             live
           </Badge>
         ) : (
-          <Badge variant="secondary">draft</Badge>
+          <Badge variant="secondary" className="shrink-0">draft</Badge>
         )}
       </header>
       <TabBar botId={bot._id} />
