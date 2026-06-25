@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 import { BookOpen, FileText, Link2, Loader2, Plus, Trash2, Upload } from "lucide-react";
@@ -41,6 +41,16 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
   const [fileKey, setFileKey] = useState(0);
   const [resourceId, setResourceId] = useState("");
   const [resourceType, setResourceType] = useState<"page" | "database">("page");
+  const [notionConnected, setNotionConnected] = useState(false);
+  const [notionLoading, setNotionLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/account")
+      .then((r) => r.json())
+      .then((data) => setNotionConnected(data.hasNotionIntegration ?? false))
+      .catch(() => {})
+      .finally(() => setNotionLoading(false));
+  }, []);
 
   const add = async () => {
     try {
@@ -101,7 +111,7 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
       : tab === "url"
         ? url.trim().length > 0
         : tab === "notion"
-          ? resourceId.trim().length > 0
+          ? notionConnected && resourceId.trim().length > 0
           : content.trim().length > 0;
 
   return (
@@ -176,20 +186,32 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
 
           {tab === "notion" && (
             <div className="space-y-3">
+              {notionLoading ? null : !notionConnected ? (
+                <p className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
+                  Notion is not connected. Go to{" "}
+                  <a href="/dashboard/plugins" className="underline">
+                    Plugins
+                  </a>{" "}
+                  to add an integration token.
+                </p>
+              ) : null}
               <Input
                 value={resourceId}
                 onChange={(e) => setResourceId(e.target.value)}
                 placeholder="Notion page or database ID"
+                disabled={!notionConnected}
               />
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setResourceType("page")}
+                  disabled={!notionConnected}
                   className={cn(
                     "flex-1 cursor-pointer rounded-lg border px-3 py-2 text-xs font-semibold transition",
                     resourceType === "page"
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border text-muted-foreground hover:text-foreground",
+                    !notionConnected && "cursor-not-allowed opacity-50",
                   )}
                 >
                   Page
@@ -197,11 +219,13 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
                 <button
                   type="button"
                   onClick={() => setResourceType("database")}
+                  disabled={!notionConnected}
                   className={cn(
                     "flex-1 cursor-pointer rounded-lg border px-3 py-2 text-xs font-semibold transition",
                     resourceType === "database"
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border text-muted-foreground hover:text-foreground",
+                    !notionConnected && "cursor-not-allowed opacity-50",
                   )}
                 >
                   Database
@@ -213,7 +237,10 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
             </div>
           )}
 
-          <Button onClick={add} disabled={addMutation.isPending || !canSubmit}>
+          <Button
+            onClick={add}
+            disabled={addMutation.isPending || !canSubmit || (tab === "notion" && notionLoading)}
+          >
             {addMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
