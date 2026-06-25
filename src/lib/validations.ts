@@ -88,7 +88,15 @@ export const documentTextSchema = z.object({
   content: z.string().min(1, "Content is required"),
 });
 
+export const documentNotionSchema = z.object({
+  sourceType: z.literal("notion"),
+  title: z.string().optional(),
+  resourceId: z.string().min(1, "Resource ID is required"),
+  resourceType: z.enum(["page", "database"]),
+});
+
 export const documentCreateSchema = z.discriminatedUnion("sourceType", [
   documentUrlSchema,
   documentTextSchema,
+  documentNotionSchema,
 ]);

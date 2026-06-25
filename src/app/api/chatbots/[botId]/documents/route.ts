@@ -1,13 +1,18 @@
 import { documentCreateSchema } from "@/lib/validations";
 import { requireOwner } from "@/lib/auth";
 import { db_connection } from "@/lib/db";
-import { extractTextFromFile, UnsupportedFileError } from "@/lib/extractFile";
+import {
+  extractTextFromFile,
+  extractTextFromNotion,
+  UnsupportedFileError,
+} from "@/lib/extractFile";
 import { supportsEmbeddings } from "@/lib/options";
 import { resolveProviderKey } from "@/lib/providerKey";
 import { addDocuments, isRagConfigured, splitText } from "@/lib/rag";
 import { ChatbotModel } from "@/models/chatbot.model";
 import { ChunkModel } from "@/models/chunk.model";
 import { DocumentModel } from "@/models/document.model";
+import { OwnerModel } from "@/models/owner.model";
 import { isValidObjectId } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -54,6 +59,8 @@ export async function GET(_request: NextRequest, { params }: Params) {
         sourceType: d.sourceType,
         status: d.status,
         chunkCount: d.chunkCount,
+        notionResourceId: d.notionResourceId,
+        notionResourceType: d.notionResourceType,
         createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : null,
       })),
     });
@@ -92,7 +99,9 @@ export async function POST(request: NextRequest, { params }: Params) {
     // or a JSON body (pasted text / URL).
     let text = "";
     let resolvedTitle = "";
-    let sourceType: "file" | "url" | "text" = "text";
+    let sourceType: "file" | "url" | "text" | "notion" = "text";
+    let notionResourceId: string | undefined;
+    let notionResourceType: "page" | "database" | undefined;
 
     const contentType = request.headers.get("content-type") || "";
 
@@ -129,6 +138,21 @@ export async function POST(request: NextRequest, { params }: Params) {
         }
         sourceType = "url";
         if (!resolvedTitle) resolvedTitle = body.url;
+      } else if (body.sourceType === "notion") {
+        const ownerDoc = await OwnerModel.findOne({ ownerId: owner.ownerId }).select(
+          "+notionIntegrationToken",
+        );
+        const token = ownerDoc?.notionIntegrationToken as string | undefined;
+        if (!token) return bad("Configure a Notion integration token in Plugins first.");
+        try {
+          text = await extractTextFromNotion(body.resourceId, body.resourceType, token);
+        } catch {
+          return bad("Could not fetch the Notion resource. Check the ID and integration access.");
+        }
+        sourceType = "notion";
+        notionResourceId = body.resourceId;
+        notionResourceType = body.resourceType;
+        if (!resolvedTitle) resolvedTitle = `${body.resourceType}: ${body.resourceId}`;
       } else {
         text = body.content;
         sourceType = "text";
@@ -145,6 +169,8 @@ export async function POST(request: NextRequest, { params }: Params) {
       title: resolvedTitle,
       sourceType,
       status: "processing",
+      notionResourceId,
+      notionResourceType,
     });
 
     try {
@@ -180,6 +206,8 @@ export async function POST(request: NextRequest, { params }: Params) {
           sourceType: doc.sourceType,
           status: doc.status,
           chunkCount: doc.chunkCount,
+          notionResourceId: doc.notionResourceId,
+          notionResourceType: doc.notionResourceType,
           createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : null,
         },
       },

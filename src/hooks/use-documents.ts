@@ -5,15 +5,18 @@ import { queryKeys } from "@/lib/query-keys";
 interface DocItem {
   _id: string;
   title: string;
-  sourceType: "file" | "url" | "text";
+  sourceType: "file" | "url" | "text" | "notion";
   status: "processing" | "ready" | "error";
   chunkCount: number;
+  notionResourceId?: string;
+  notionResourceType?: "page" | "database";
   createdAt: string | null;
 }
 
 type JsonPayload =
   | { sourceType: "url"; title: string; url: string }
-  | { sourceType: "text"; title: string; content: string };
+  | { sourceType: "text"; title: string; content: string }
+  | { sourceType: "notion"; title: string; resourceId: string; resourceType: "page" | "database" };
 
 export function useDocuments(botId: string) {
   return useQuery({
