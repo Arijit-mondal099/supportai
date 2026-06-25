@@ -59,8 +59,8 @@ export const chatbotUpdateSchema = z.object({
 export const chatRequestSchema = z
   .object({
     prompt: z.string().min(1, "prompt is required"),
-    botId: z.string().optional(),
-    ownerId: z.string().optional(),
+    botId: z.string().nullish(),
+    ownerId: z.string().nullish(),
     sessionId: z.string().optional(),
     preview: z.boolean().optional(),
     history: z
