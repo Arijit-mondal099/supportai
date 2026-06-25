@@ -231,9 +231,25 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
                   Database
                 </button>
               </div>
-              <p className="text-[11px] text-muted-foreground">
-                Make sure your Notion integration has access to this resource.
-              </p>
+              <details className="group cursor-pointer">
+                <summary className="text-[11px] font-medium text-muted-foreground underline decoration-dotted underline-offset-2">
+                  How to find the ID
+                </summary>
+                <div className="mt-2 space-y-1.5 text-[11px] text-muted-foreground">
+                  <p>
+                    <strong>Page:</strong> Copy the URL from your browser — the ID is the last
+                    32-character hex segment. Paste the full URL above.
+                  </p>
+                  <p>
+                    <strong>Database:</strong> Open the database view in Notion and copy the URL.
+                    Same format — the ID is in the URL path.
+                  </p>
+                  <p>
+                    <strong>Integration access:</strong> Make sure your integration is invited to
+                    the page or database (share → invite → your integration name).
+                  </p>
+                </div>
+              </details>
             </div>
           )}
 
