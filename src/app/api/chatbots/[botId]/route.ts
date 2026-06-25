@@ -1,3 +1,4 @@
+import { chatbotUpdateSchema } from "@/lib/validations";
 import { normalizeProvider } from "@/lib/options";
 import { requireOwner } from "@/lib/auth";
 import { db_connection } from "@/lib/db";
@@ -18,23 +19,6 @@ const unauthorized = () =>
 const notFound = () =>
   NextResponse.json({ success: false, message: "Chatbot not found" }, { status: 404 });
 
-interface UpdateBody {
-  name?: string;
-  status?: "draft" | "live";
-  supportEmail?: string;
-  provider?: "gemini" | "openai";
-  model?: string;
-  apiKey?: string;
-  businessInfo?: Partial<{ businessName: string; industry: string; description: string }>;
-  botInfo?: Partial<{ botName: string; communicationTone: string; personalityDescription: string }>;
-  appearance?: Partial<{
-    accentColor: string;
-    avatarUrl: string;
-    displayName: string;
-    welcomeMessage: string;
-  }>;
-}
-
 export async function GET(_request: NextRequest, { params }: Params) {
   const owner = await requireOwner();
   if (!owner) return unauthorized();
@@ -53,18 +37,25 @@ export async function PUT(request: NextRequest, { params }: Params) {
   const { botId } = await params;
   if (!isValidObjectId(botId)) return notFound();
 
-  const body = (await request.json()) as UpdateBody;
+  const parsed = chatbotUpdateSchema.safeParse(await request.json());
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, message: parsed.error.issues.map((i) => i.message).join("; ") },
+      { status: 400 },
+    );
+  }
+  const body = parsed.data;
 
   await db_connection();
   const bot = await ChatbotModel.findOne({ _id: botId, ownerId: owner.ownerId });
   if (!bot) return notFound();
 
-  if (typeof body.name === "string") bot.name = body.name.trim() || "Untitled chatbot";
-  if (body.status === "draft" || body.status === "live") bot.status = body.status;
-  if (typeof body.supportEmail === "string") bot.supportEmail = body.supportEmail;
+  if (body.name) bot.name = body.name.trim() || "Untitled chatbot";
+  if (body.status) bot.status = body.status;
+  if (body.supportEmail !== undefined) bot.supportEmail = body.supportEmail;
   if (body.provider) bot.provider = normalizeProvider(body.provider);
-  if (typeof body.model === "string") bot.model = body.model;
-  if (typeof body.apiKey === "string") bot.apiKeyOverride = body.apiKey.trim();
+  if (body.model) bot.model = body.model;
+  if (body.apiKey) bot.apiKeyOverride = body.apiKey.trim();
 
   if (body.businessInfo) {
     bot.businessInfo.businessName = body.businessInfo.businessName ?? bot.businessInfo.businessName;

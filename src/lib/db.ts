@@ -1,10 +1,6 @@
 import { connect } from "mongoose";
 import { ENV } from "./env";
 
-if (!ENV.MONGODB_URI) {
-  throw new Error("MONGODB_URI is not defined in environment variables");
-}
-
 let cache = globalThis.mongoose;
 
 if (!cache) {
