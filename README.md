@@ -1,6 +1,6 @@
 <div align="center">
 
-# <picture><img alt="SupportAI" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%231b1a17'/%3E%3Cpath d='M12 14a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2h-6l-4 4v-4h-2a2 2 0 01-2-2V14z' fill='%23fff'/%3E%3Ccircle cx='20' cy='18' r='1.5' fill='%231b1a17'/%3E%3C/svg%3E" width="40" height="40" align="center" style="vertical-align: middle; margin-right: 8px;"> SupportAI
+# <img alt="SupportAI" src="public/favicon.png" width="40" height="40" align="center" style="vertical-align: middle; margin-right: 8px;"> SupportAI
 
 **AI-powered customer support, trained on your knowledge.**
 
