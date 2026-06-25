@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "motion/react";
-import { FileText, Link2, Loader2, Plus, Trash2, Upload } from "lucide-react";
+import { BookOpen, FileText, Link2, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,12 +13,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useDocuments, useAddDocument, useDeleteDocument } from "@/hooks/use-documents";
 
-type SourceTab = "text" | "url" | "file";
+type SourceTab = "text" | "url" | "file" | "notion";
 
 const TABS: { id: SourceTab; icon: React.ReactNode; label: string }[] = [
   { id: "text", icon: <FileText size={13} />, label: "Text" },
   { id: "url", icon: <Link2 size={13} />, label: "URL" },
   { id: "file", icon: <Upload size={13} />, label: "File" },
+  { id: "notion", icon: <BookOpen size={13} />, label: "Notion" },
 ];
 
 const statusStyles: Record<string, string> = {
@@ -38,13 +39,21 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
   const [url, setUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [fileKey, setFileKey] = useState(0);
+  const [resourceId, setResourceId] = useState("");
+  const [resourceType, setResourceType] = useState<"page" | "database">("page");
 
   const add = async () => {
     try {
       let payload:
         | FormData
         | { sourceType: "url"; title: string; url: string }
-        | { sourceType: "text"; title: string; content: string };
+        | { sourceType: "text"; title: string; content: string }
+        | {
+            sourceType: "notion";
+            title: string;
+            resourceId: string;
+            resourceType: "page" | "database";
+          };
       if (tab === "file") {
         if (!file) return;
         const form = new FormData();
@@ -53,6 +62,8 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
         payload = form;
       } else if (tab === "url") {
         payload = { sourceType: "url", title, url };
+      } else if (tab === "notion") {
+        payload = { sourceType: "notion", title, resourceId, resourceType };
       } else {
         payload = { sourceType: "text", title, content };
       }
@@ -67,6 +78,8 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
       setUrl("");
       setFile(null);
       setFileKey((k) => k + 1);
+      setResourceId("");
+      setResourceType("page");
       toast.success("Added to knowledge base");
     } catch {
       toast.error("Could not add document.");
@@ -83,7 +96,13 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
   };
 
   const canSubmit =
-    tab === "file" ? !!file : tab === "url" ? url.trim().length > 0 : content.trim().length > 0;
+    tab === "file"
+      ? !!file
+      : tab === "url"
+        ? url.trim().length > 0
+        : tab === "notion"
+          ? resourceId.trim().length > 0
+          : content.trim().length > 0;
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -153,6 +172,45 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
                 className="hidden"
               />
             </label>
+          )}
+
+          {tab === "notion" && (
+            <div className="space-y-3">
+              <Input
+                value={resourceId}
+                onChange={(e) => setResourceId(e.target.value)}
+                placeholder="Notion page or database ID"
+              />
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setResourceType("page")}
+                  className={cn(
+                    "flex-1 cursor-pointer rounded-lg border px-3 py-2 text-xs font-semibold transition",
+                    resourceType === "page"
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  Page
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResourceType("database")}
+                  className={cn(
+                    "flex-1 cursor-pointer rounded-lg border px-3 py-2 text-xs font-semibold transition",
+                    resourceType === "database"
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  Database
+                </button>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Make sure your Notion integration has access to this resource.
+              </p>
+            </div>
           )}
 
           <Button onClick={add} disabled={addMutation.isPending || !canSubmit}>
