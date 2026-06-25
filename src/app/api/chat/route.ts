@@ -8,6 +8,7 @@ import { ConversationModel } from "@/models/conversation.model";
 import { MessageModel } from "@/models/message.model";
 import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { isValidObjectId } from "mongoose";
+import { chatRequestSchema } from "@/lib/validations";
 import { NextRequest, NextResponse } from "next/server";
 
 const corsHeaders = {
@@ -21,41 +22,34 @@ const HISTORY_LIMIT = 20;
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, botId, ownerId, sessionId, preview, history } = (await request.json()) as {
-      prompt?: string;
-      botId?: string;
-      ownerId?: string;
-      sessionId?: string;
-      preview?: boolean;
-      history?: { role: "user" | "model"; text: string }[];
-    };
-
-    if (!prompt?.trim() || (!botId?.trim() && !ownerId?.trim())) {
+    const parsed = chatRequestSchema.safeParse(await request.json());
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields: prompt and botId." },
+        { success: false, message: parsed.error.issues.map((i) => i.message).join("; ") },
         { status: 400, headers: corsHeaders },
       );
     }
+    const { prompt, botId, ownerId, sessionId, preview, history } = parsed.data;
 
     await db_connection();
 
     // Resolve the chatbot by its id (preferred) or, for legacy data-owner-id
     // embeds, fall back to that owner's first live (else first) bot.
-    let bot = botId && isValidObjectId(botId)
-      ? await ChatbotModel.findOne({ _id: botId, ...(preview ? {} : { status: "live" }) })
-      : null;
+    let bot =
+      botId && isValidObjectId(botId)
+        ? await ChatbotModel.findOne({ _id: botId, ...(preview ? {} : { status: "live" }) })
+        : null;
     if (!bot && ownerId) {
       bot = await ChatbotModel.findOne({ ownerId, status: "live" }).sort({ createdAt: 1 });
       if (!bot) bot = await ChatbotModel.findOne({ ownerId }).sort({ createdAt: 1 });
     }
 
     if (!bot) {
-      const draftBot = botId && isValidObjectId(botId)
-        ? await ChatbotModel.findOne({ _id: botId, status: "draft" }).select("_id").lean()
-        : null;
-      const msg = draftBot
-        ? "This chatbot is not published yet."
-        : "Chatbot not found.";
+      const draftBot =
+        botId && isValidObjectId(botId)
+          ? await ChatbotModel.findOne({ _id: botId, status: "draft" }).select("_id").lean()
+          : null;
+      const msg = draftBot ? "This chatbot is not published yet." : "Chatbot not found.";
       return NextResponse.json(
         { success: false, message: msg },
         { status: 404, headers: corsHeaders },

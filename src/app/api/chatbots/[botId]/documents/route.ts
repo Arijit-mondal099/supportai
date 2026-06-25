@@ -1,3 +1,4 @@
+import { documentCreateSchema } from "@/lib/validations";
 import { requireOwner } from "@/lib/auth";
 import { db_connection } from "@/lib/db";
 import { extractTextFromFile, UnsupportedFileError } from "@/lib/extractFile";
@@ -113,16 +114,14 @@ export async function POST(request: NextRequest, { params }: Params) {
         return bad("Could not read that file.");
       }
     } else {
-      const body = (await request.json()) as {
-        sourceType?: "text" | "url";
-        title?: string;
-        content?: string;
-        url?: string;
-      };
+      const parsed = documentCreateSchema.safeParse(await request.json());
+      if (!parsed.success) {
+        return bad(parsed.error.issues.map((i) => i.message).join("; "));
+      }
+      const body = parsed.data;
       resolvedTitle = body.title?.trim() || "";
 
       if (body.sourceType === "url") {
-        if (!body.url?.trim()) return bad("A URL is required.");
         try {
           text = stripHtml(await fetch(body.url).then((r) => r.text()));
         } catch {
@@ -131,7 +130,6 @@ export async function POST(request: NextRequest, { params }: Params) {
         sourceType = "url";
         if (!resolvedTitle) resolvedTitle = body.url;
       } else {
-        if (!body.content?.trim()) return bad("Content is required.");
         text = body.content;
         sourceType = "text";
         if (!resolvedTitle) resolvedTitle = "Pasted text";
