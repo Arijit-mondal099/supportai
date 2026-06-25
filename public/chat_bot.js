@@ -479,7 +479,10 @@
       if (val.success && val.data?.text) {
         add_message(val.data.text, "model");
       } else {
-        add_message(val.message || "Sorry, I'm not available right now. Please try again later.", "model");
+        add_message(
+          val.message || "Sorry, I'm not available right now. Please try again later.",
+          "model",
+        );
       }
     } catch (error) {
       console.log(error);

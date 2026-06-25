@@ -15,7 +15,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const session = await getScalekit().authenticateWithCode(code, `${ENV.API_URI}/api/auth/verify`);
+    const session = await getScalekit().authenticateWithCode(
+      code,
+      `${ENV.API_URI}/api/auth/verify`,
+    );
 
     const cookieStore = await cookies();
 

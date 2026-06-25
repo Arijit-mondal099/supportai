@@ -25,8 +25,12 @@ export default function Loading() {
           <dl className="divide-y divide-border">
             {Array.from({ length: 7 }).map((_, i) => (
               <div key={i} className="flex items-center justify-between gap-4 py-2.5">
-                <dt><Skeleton className="h-4 w-24" /></dt>
-                <dd><Skeleton className="h-4 w-32" /></dd>
+                <dt>
+                  <Skeleton className="h-4 w-24" />
+                </dt>
+                <dd>
+                  <Skeleton className="h-4 w-32" />
+                </dd>
               </div>
             ))}
           </dl>

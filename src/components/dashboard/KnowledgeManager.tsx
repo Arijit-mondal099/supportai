@@ -41,7 +41,10 @@ export const KnowledgeManager = ({ botId }: { botId: string }) => {
 
   const add = async () => {
     try {
-      let payload: FormData | { sourceType: "url"; title: string; url: string } | { sourceType: "text"; title: string; content: string };
+      let payload:
+        | FormData
+        | { sourceType: "url"; title: string; url: string }
+        | { sourceType: "text"; title: string; content: string };
       if (tab === "file") {
         if (!file) return;
         const form = new FormData();

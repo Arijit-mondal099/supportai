@@ -18,7 +18,8 @@ export default function NotFound() {
       <h1 className="mt-8 text-8xl font-extrabold tracking-tight text-zinc-900">404</h1>
       <p className="mt-4 text-lg font-medium text-zinc-500">Page not found</p>
       <p className="mt-2 max-w-md text-center text-sm text-zinc-400">
-        The page you&apos;re looking for doesn&apos;t exist or has been moved. Double-check the URL or head back home.
+        The page you&apos;re looking for doesn&apos;t exist or has been moved. Double-check the URL
+        or head back home.
       </p>
 
       <Button render={<Link href="/" />} nativeButton={false} className="mt-8 h-10 px-6 text-sm">

@@ -91,17 +91,29 @@ export default function Loading() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead><SkeletonPulse className="h-4 w-12" /></TableHead>
-                <TableHead><SkeletonPulse className="h-4 w-16" /></TableHead>
-                <TableHead className="text-right"><SkeletonPulse className="ml-auto h-4 w-16" /></TableHead>
+                <TableHead>
+                  <SkeletonPulse className="h-4 w-12" />
+                </TableHead>
+                <TableHead>
+                  <SkeletonPulse className="h-4 w-16" />
+                </TableHead>
+                <TableHead className="text-right">
+                  <SkeletonPulse className="ml-auto h-4 w-16" />
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {Array.from({ length: 4 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><SkeletonPulse className="h-4 w-24" /></TableCell>
-                  <TableCell><SkeletonPulse className="h-4 w-8" /></TableCell>
-                  <TableCell className="text-right"><SkeletonPulse className="ml-auto h-4 w-20" /></TableCell>
+                  <TableCell>
+                    <SkeletonPulse className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <SkeletonPulse className="h-4 w-8" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <SkeletonPulse className="ml-auto h-4 w-20" />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -16,24 +16,24 @@ No test or typecheck scripts exist.
 
 ## Git hooks (husky)
 
-| Hook         | What it runs                                |
-| ------------ | ------------------------------------------- |
-| `pre-commit` | `npm run lint` + `npm run format`           |
+| Hook         | What it runs                                 |
+| ------------ | -------------------------------------------- |
+| `pre-commit` | `npm run lint` + `npm run format`            |
 | `commit-msg` | `commitlint` – enforces conventional commits |
 
 ## Environment
 
 Copy `.env.local` template (all required unless noted):
 
-| Var | Notes |
-| --- | --- |
-| `NEXT_PUBLIC_API_URI` | e.g. `http://localhost:3000` |
-| `SCALEKIT_ENVIRONMENT_URL` | Scalekit tenant URL |
-| `SCALEKIT_CLIENT_ID` | Scalekit OAuth client ID |
-| `SCALEKIT_CLIENT_SECRET` | Scalekit OAuth client secret |
-| `MONGODB_URI` | MongoDB connection string |
-| `PINECONE_API_KEY` | *(optional)* Gates RAG feature |
-| `PINECONE_INDEX` | *(optional)* Pinecone index name |
+| Var                        | Notes                            |
+| -------------------------- | -------------------------------- |
+| `NEXT_PUBLIC_API_URI`      | e.g. `http://localhost:3000`     |
+| `SCALEKIT_ENVIRONMENT_URL` | Scalekit tenant URL              |
+| `SCALEKIT_CLIENT_ID`       | Scalekit OAuth client ID         |
+| `SCALEKIT_CLIENT_SECRET`   | Scalekit OAuth client secret     |
+| `MONGODB_URI`              | MongoDB connection string        |
+| `PINECONE_API_KEY`         | _(optional)_ Gates RAG feature   |
+| `PINECONE_INDEX`           | _(optional)_ Pinecone index name |
 
 Env vars read in `src/lib/env.ts` – required ones crash at module import if missing.
 
@@ -64,59 +64,59 @@ Env vars read in `src/lib/env.ts` – required ones crash at module import if mi
 
 ## Routes
 
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| `GET` | `/api/auth/login` | — | Redirect to Scalekit OAuth |
-| `GET` | `/api/auth/verify?code=` | — | OAuth callback → set cookie → redirect `/dashboard` |
-| `GET` | `/api/auth/logout` | — | Delete cookie → redirect `/` |
-| `POST` | `/api/chat` | CORS `*` | Send prompt to AI. Supports multi-turn via `sessionId`, preview mode via `preview: true` |
-| `GET` | `/api/chat/config?botId=` | CORS `*` | Bot appearance (accent, avatar, displayName, welcomeMessage) |
-| `GET` | `/api/chatbots` | session | List all chatbots for owner |
-| `POST` | `/api/chatbots` | session | Create chatbot |
-| `GET` | `/api/chatbots/[botId]` | session | Get single chatbot |
-| `PUT` | `/api/chatbots/[botId]` | session | Update chatbot (regenerates knowledge string) |
-| `DELETE` | `/api/chatbots/[botId]` | session | Delete chatbot + cascade (vectors, conversations, messages, docs, chunks) |
-| `GET` | `/api/chatbots/[botId]/documents` | session | List knowledge documents |
-| `POST` | `/api/chatbots/[botId]/documents` | session | Ingest document (file/URL/text) |
-| `DELETE` | `/api/chatbots/[botId]/documents/[docId]` | session | Delete document + vectors |
-| `GET` | `/api/chatbots/[botId]/analytics` | session | Per-bot stats (conversations, messages, lastActive) |
-| `GET` | `/api/chatbots/[botId]/conversations` | session | List conversations or get transcript (`?conversationId=`) |
+| Method   | Path                                      | Auth     | Description                                                                              |
+| -------- | ----------------------------------------- | -------- | ---------------------------------------------------------------------------------------- |
+| `GET`    | `/api/auth/login`                         | —        | Redirect to Scalekit OAuth                                                               |
+| `GET`    | `/api/auth/verify?code=`                  | —        | OAuth callback → set cookie → redirect `/dashboard`                                      |
+| `GET`    | `/api/auth/logout`                        | —        | Delete cookie → redirect `/`                                                             |
+| `POST`   | `/api/chat`                               | CORS `*` | Send prompt to AI. Supports multi-turn via `sessionId`, preview mode via `preview: true` |
+| `GET`    | `/api/chat/config?botId=`                 | CORS `*` | Bot appearance (accent, avatar, displayName, welcomeMessage)                             |
+| `GET`    | `/api/chatbots`                           | session  | List all chatbots for owner                                                              |
+| `POST`   | `/api/chatbots`                           | session  | Create chatbot                                                                           |
+| `GET`    | `/api/chatbots/[botId]`                   | session  | Get single chatbot                                                                       |
+| `PUT`    | `/api/chatbots/[botId]`                   | session  | Update chatbot (regenerates knowledge string)                                            |
+| `DELETE` | `/api/chatbots/[botId]`                   | session  | Delete chatbot + cascade (vectors, conversations, messages, docs, chunks)                |
+| `GET`    | `/api/chatbots/[botId]/documents`         | session  | List knowledge documents                                                                 |
+| `POST`   | `/api/chatbots/[botId]/documents`         | session  | Ingest document (file/URL/text)                                                          |
+| `DELETE` | `/api/chatbots/[botId]/documents/[docId]` | session  | Delete document + vectors                                                                |
+| `GET`    | `/api/chatbots/[botId]/analytics`         | session  | Per-bot stats (conversations, messages, lastActive)                                      |
+| `GET`    | `/api/chatbots/[botId]/conversations`     | session  | List conversations or get transcript (`?conversationId=`)                                |
 
 ## Dashboard pages
 
 All under `src/app/(user)/dashboard/`. Each page calls `requireOwner()` – redirects to login if null.
 
-| Path | Description |
-|---|---|
-| `/dashboard` | Account analytics overview (stats, 14-day chart, top agents, recent convos) |
-| `/dashboard/agents` | Agent grid with search, status badges, manage/delete |
-| `/dashboard/agents/new` | 4-step creation wizard (Basics → Persona → Model → Review) |
-| `/dashboard/bots/[botId]` | Per-bot stats |
-| `/dashboard/bots/[botId]/playground` | Live chat test (no persistence) |
-| `/dashboard/bots/[botId]/config` | Full config form + delete danger zone |
-| `/dashboard/bots/[botId]/knowledge` | Document management (add/remove text, URL, file) |
-| `/dashboard/bots/[botId]/appearance` | Color, avatar, name, welcome message + live preview |
-| `/dashboard/bots/[botId]/embed` | Copy-paste `<script>` snippet |
-| `/dashboard/bots/[botId]/conversations` | Two-panel conversation viewer |
-| `/dashboard/account` | Profile, API key info, logout |
-| `/dashboard/plugins` | Plugin marketplace cards |
+| Path                                    | Description                                                                 |
+| --------------------------------------- | --------------------------------------------------------------------------- |
+| `/dashboard`                            | Account analytics overview (stats, 14-day chart, top agents, recent convos) |
+| `/dashboard/agents`                     | Agent grid with search, status badges, manage/delete                        |
+| `/dashboard/agents/new`                 | 4-step creation wizard (Basics → Persona → Model → Review)                  |
+| `/dashboard/bots/[botId]`               | Per-bot stats                                                               |
+| `/dashboard/bots/[botId]/playground`    | Live chat test (no persistence)                                             |
+| `/dashboard/bots/[botId]/config`        | Full config form + delete danger zone                                       |
+| `/dashboard/bots/[botId]/knowledge`     | Document management (add/remove text, URL, file)                            |
+| `/dashboard/bots/[botId]/appearance`    | Color, avatar, name, welcome message + live preview                         |
+| `/dashboard/bots/[botId]/embed`         | Copy-paste `<script>` snippet                                               |
+| `/dashboard/bots/[botId]/conversations` | Two-panel conversation viewer                                               |
+| `/dashboard/account`                    | Profile, API key info, logout                                               |
+| `/dashboard/plugins`                    | Plugin marketplace cards                                                    |
 
 ## Models (Mongoose)
 
-| Model | Collection | Key fields |
-|---|---|---|
-| `Chatbot` | `chatbots` | `ownerId`, `name`, `status` ("draft"\|"live"), `provider`, `model`, `apiKeyOverride`, `businessInfo`, `botInfo`, `appearance`, `knowledge` |
-| `Conversation` | `conversations` | `botId`, `ownerId`, `sessionId` (unique per bot), `messageCount`, `lastMessageAt` |
-| `Message` | `messages` | `conversationId`, `botId`, `role` ("user"\|"model"), `text` |
-| `Document` | `documents` | `botId`, `ownerId`, `title`, `sourceType` ("file"\|"url"\|"text"), `status` ("processing"\|"ready"\|"error"), `chunkCount` |
-| `Chunk` | `chunks` | `botId`, `documentId`, `pineconeId`, `text` |
+| Model          | Collection      | Key fields                                                                                                                                 |
+| -------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Chatbot`      | `chatbots`      | `ownerId`, `name`, `status` ("draft"\|"live"), `provider`, `model`, `apiKeyOverride`, `businessInfo`, `botInfo`, `appearance`, `knowledge` |
+| `Conversation` | `conversations` | `botId`, `ownerId`, `sessionId` (unique per bot), `messageCount`, `lastMessageAt`                                                          |
+| `Message`      | `messages`      | `conversationId`, `botId`, `role` ("user"\|"model"), `text`                                                                                |
+| `Document`     | `documents`     | `botId`, `ownerId`, `title`, `sourceType` ("file"\|"url"\|"text"), `status` ("processing"\|"ready"\|"error"), `chunkCount`                 |
+| `Chunk`        | `chunks`        | `botId`, `documentId`, `pineconeId`, `text`                                                                                                |
 
 ## Providers & models
 
-| Provider | Models | Embeddings |
-|---|---|---|
-| `gemini` | `gemini-2.0-flash`, `gemini-1.5-flash`, `gemini-1.5-pro` | `text-embedding-004` (768d) |
-| `openai` | `gpt-4o-mini`, `gpt-4o`, `gpt-4-turbo` | `text-embedding-3-small` (768d) |
+| Provider | Models                                                   | Embeddings                      |
+| -------- | -------------------------------------------------------- | ------------------------------- |
+| `gemini` | `gemini-2.0-flash`, `gemini-1.5-flash`, `gemini-1.5-pro` | `text-embedding-004` (768d)     |
+| `openai` | `gpt-4o-mini`, `gpt-4o`, `gpt-4-turbo`                   | `text-embedding-3-small` (768d) |
 
 Default model for each provider is the first in its list (`gemini-2.0-flash`, `gpt-4o-mini`).
 

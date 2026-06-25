@@ -75,11 +75,16 @@ async function BotHeader({ params }: { params: Promise<{ botId: string }> }) {
         </span>
         <h1 className="min-w-0 truncate text-2xl font-bold tracking-tight">{bot.name}</h1>
         {bot.status === "live" ? (
-          <Badge variant="outline" className="shrink-0 border-emerald-300 bg-emerald-50 text-emerald-700">
+          <Badge
+            variant="outline"
+            className="shrink-0 border-emerald-300 bg-emerald-50 text-emerald-700"
+          >
             live
           </Badge>
         ) : (
-          <Badge variant="secondary" className="shrink-0">draft</Badge>
+          <Badge variant="secondary" className="shrink-0">
+            draft
+          </Badge>
         )}
       </header>
       <TabBar botId={bot._id} />

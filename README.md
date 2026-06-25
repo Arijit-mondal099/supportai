@@ -11,77 +11,85 @@ Built with **Next.js 16**, **Google Gemini / OpenAI**, **MongoDB**, and **Pineco
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| **AI Chat** | Natural, context-aware responses via Gemini or OpenAI |
-| **RAG Knowledge Base** | Upload PDFs, DOCX, TXT, MD, CSV — or paste text / scrape a URL — and get semantic search over your content |
-| **Custom Persona** | Configure bot name, communication tone, and personality for each agent |
-| **Chat Playground** | Test your bot live during configuration without persisting messages |
-| **Embed Widget** | Drop-in `<script>` tag — zero-dependency chat widget on any site |
-| **Multi-provider** | Per-agent provider selection: Google Gemini or OpenAI |
-| **Scalekit Auth** | Enterprise B2B OAuth with automatic tenant isolation |
-| **Conversation History** | Multi-turn chats persisted per visitor session |
-| **Dashboard** | Analytics, knowledge management, appearance theming, conversation viewer |
-| **Plugins Page** | Extensible plugin marketplace (Slack, WhatsApp, Zapier coming soon) |
+| Feature                  | Description                                                                                                |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **AI Chat**              | Natural, context-aware responses via Gemini or OpenAI                                                      |
+| **RAG Knowledge Base**   | Upload PDFs, DOCX, TXT, MD, CSV — or paste text / scrape a URL — and get semantic search over your content |
+| **Custom Persona**       | Configure bot name, communication tone, and personality for each agent                                     |
+| **Chat Playground**      | Test your bot live during configuration without persisting messages                                        |
+| **Embed Widget**         | Drop-in `<script>` tag — zero-dependency chat widget on any site                                           |
+| **Multi-provider**       | Per-agent provider selection: Google Gemini or OpenAI                                                      |
+| **Scalekit Auth**        | Enterprise B2B OAuth with automatic tenant isolation                                                       |
+| **Conversation History** | Multi-turn chats persisted per visitor session                                                             |
+| **Dashboard**            | Analytics, knowledge management, appearance theming, conversation viewer                                   |
+| **Plugins Page**         | Extensible plugin marketplace (Slack, WhatsApp, Zapier coming soon)                                        |
 
 ---
 
 ## Tech Stack
 
 ### Framework & Language
-| Tech | Purpose |
-|---|---|
+
+| Tech                                           | Purpose                   |
+| ---------------------------------------------- | ------------------------- |
 | [Next.js 16](https://nextjs.org/) (App Router) | Fullstack React framework |
-| [React 19](https://react.dev/) | UI library |
-| [TypeScript](https://www.typescriptlang.org/) | Type safety |
+| [React 19](https://react.dev/)                 | UI library                |
+| [TypeScript](https://www.typescriptlang.org/)  | Type safety               |
 
 ### UI & Styling
-| Tech | Purpose |
-|---|---|
-| [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first CSS |
-| [Motion](https://motion.dev/) | Animations |
-| [Lucide React](https://lucide.dev/) | Icons |
-| [shadcn/ui](https://ui.shadcn.com/) | Primitive UI components |
-| [Recharts](https://recharts.org/) | Analytics charts |
-| [Sonner](https://sonner.emilkowal.ski/) | Toast notifications |
+
+| Tech                                        | Purpose                 |
+| ------------------------------------------- | ----------------------- |
+| [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first CSS       |
+| [Motion](https://motion.dev/)               | Animations              |
+| [Lucide React](https://lucide.dev/)         | Icons                   |
+| [shadcn/ui](https://ui.shadcn.com/)         | Primitive UI components |
+| [Recharts](https://recharts.org/)           | Analytics charts        |
+| [Sonner](https://sonner.emilkowal.ski/)     | Toast notifications     |
 
 ### Database & Storage
-| Tech | Purpose |
-|---|---|
-| [MongoDB](https://www.mongodb.com/) via [Mongoose 9](https://mongoosejs.com/) | Primary data store |
-| [Pinecone](https://www.pinecone.io/) | Vector database for RAG |
+
+| Tech                                                                          | Purpose                 |
+| ----------------------------------------------------------------------------- | ----------------------- |
+| [MongoDB](https://www.mongodb.com/) via [Mongoose 9](https://mongoosejs.com/) | Primary data store      |
+| [Pinecone](https://www.pinecone.io/)                                          | Vector database for RAG |
 
 ### AI / LLM
-| Tech | Purpose |
-|---|---|
-| [Google Generative AI SDK](https://github.com/googleapis/js-genai) | Gemini chat + embeddings |
-| [OpenAI SDK](https://platform.openai.com/docs/libraries) | GPT chat + embeddings |
-| [LangChain Core](https://js.langchain.com/) | Unified chat / embeddings interface |
-| [LangChain TextSplitters](https://js.langchain.com/) | Document chunking |
+
+| Tech                                                               | Purpose                             |
+| ------------------------------------------------------------------ | ----------------------------------- |
+| [Google Generative AI SDK](https://github.com/googleapis/js-genai) | Gemini chat + embeddings            |
+| [OpenAI SDK](https://platform.openai.com/docs/libraries)           | GPT chat + embeddings               |
+| [LangChain Core](https://js.langchain.com/)                        | Unified chat / embeddings interface |
+| [LangChain TextSplitters](https://js.langchain.com/)               | Document chunking                   |
 
 ### Authentication
-| Tech | Purpose |
-|---|---|
+
+| Tech                                  | Purpose                         |
+| ------------------------------------- | ------------------------------- |
 | [Scalekit SDK](https://scalekit.com/) | B2B OAuth with tenant isolation |
 
 ### Data Fetching
-| Tech | Purpose |
-|---|---|
+
+| Tech                                               | Purpose                 |
+| -------------------------------------------------- | ----------------------- |
 | [TanStack React Query](https://tanstack.com/query) | Server state management |
-| [Axios](https://axios-http.com/) | HTTP client |
+| [Axios](https://axios-http.com/)                   | HTTP client             |
 
 ### File Processing
-| Tech | Purpose |
-|---|---|
-| [pdf-parse](https://www.npmjs.com/package/pdf-parse) | PDF text extraction |
+
+| Tech                                                 | Purpose              |
+| ---------------------------------------------------- | -------------------- |
+| [pdf-parse](https://www.npmjs.com/package/pdf-parse) | PDF text extraction  |
 | [mammoth](https://github.com/mwilliamson/mammoth.js) | DOCX text extraction |
 
 ### Dev Tooling
-| Tech | Purpose |
-|---|---|
-| Husky + lint-staged | Pre-commit hooks |
-| Commitlint | Conventional commit enforcement |
-| ESLint + Prettier | Code quality |
+
+| Tech                | Purpose                         |
+| ------------------- | ------------------------------- |
+| Husky + lint-staged | Pre-commit hooks                |
+| Commitlint          | Conventional commit enforcement |
+| ESLint + Prettier   | Code quality                    |
 
 ---
 
@@ -255,20 +263,20 @@ src/
 
 ## Dashboard Features
 
-| Page | Path | Description |
-|---|---|---|
-| **Overview** | `/dashboard` | Account-level stats: agent count, live agents, total conversations, 14-day message chart, top agents, recent conversations |
-| **Agents** | `/dashboard/agents` | Grid of all agents with search, status badges, manage / delete actions |
-| **Create Agent** | `/dashboard/agents/new` | 4-step wizard: Basics → Persona → Model → Review |
-| **Bot — Overview** | `/dashboard/bots/[id]` | Per-bot stats: conversations, messages, last active, details table |
-| **Bot — Playground** | `/dashboard/bots/[id]/playground` | Live chat UI to test your bot (messages not persisted) |
-| **Bot — Config** | `/dashboard/bots/[id]/config` | Full config: name, status toggle, business info, persona, provider & API key |
-| **Bot — Knowledge** | `/dashboard/bots/[id]/knowledge` | Add documents (text / URL / file upload), view status, delete |
-| **Bot — Appearance** | `/dashboard/bots/[id]/appearance` | Accent color, avatar, display name, welcome message with live preview |
-| **Bot — Embed** | `/dashboard/bots/[id]/embed` | Copy-paste `<script>` snippet + 4-step install guide |
-| **Bot — Conversations** | `/dashboard/bots/[id]/conversations` | Two-panel: conversation list + message transcript viewer |
-| **Account** | `/dashboard/account` | Profile info, API key display, logout |
-| **Plugins** | `/dashboard/plugins` | Plugin marketplace (Website Widget active; Slack, WhatsApp, Zapier, Webhooks, REST API — coming soon) |
+| Page                    | Path                                 | Description                                                                                                                |
+| ----------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| **Overview**            | `/dashboard`                         | Account-level stats: agent count, live agents, total conversations, 14-day message chart, top agents, recent conversations |
+| **Agents**              | `/dashboard/agents`                  | Grid of all agents with search, status badges, manage / delete actions                                                     |
+| **Create Agent**        | `/dashboard/agents/new`              | 4-step wizard: Basics → Persona → Model → Review                                                                           |
+| **Bot — Overview**      | `/dashboard/bots/[id]`               | Per-bot stats: conversations, messages, last active, details table                                                         |
+| **Bot — Playground**    | `/dashboard/bots/[id]/playground`    | Live chat UI to test your bot (messages not persisted)                                                                     |
+| **Bot — Config**        | `/dashboard/bots/[id]/config`        | Full config: name, status toggle, business info, persona, provider & API key                                               |
+| **Bot — Knowledge**     | `/dashboard/bots/[id]/knowledge`     | Add documents (text / URL / file upload), view status, delete                                                              |
+| **Bot — Appearance**    | `/dashboard/bots/[id]/appearance`    | Accent color, avatar, display name, welcome message with live preview                                                      |
+| **Bot — Embed**         | `/dashboard/bots/[id]/embed`         | Copy-paste `<script>` snippet + 4-step install guide                                                                       |
+| **Bot — Conversations** | `/dashboard/bots/[id]/conversations` | Two-panel: conversation list + message transcript viewer                                                                   |
+| **Account**             | `/dashboard/account`                 | Profile info, API key display, logout                                                                                      |
+| **Plugins**             | `/dashboard/plugins`                 | Plugin marketplace (Website Widget active; Slack, WhatsApp, Zapier, Webhooks, REST API — coming soon)                      |
 
 ---
 
@@ -278,20 +286,21 @@ All endpoints return `{ success: boolean, message?: string, data?: any, error?: 
 
 ### Authentication
 
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| `GET` | `/api/auth/login` | — | Redirect to Scalekit OAuth page |
-| `GET` | `/api/auth/verify?code=` | — | OAuth callback → sets `access_token` cookie → redirects to `/dashboard` |
-| `GET` | `/api/auth/logout` | — | Deletes `access_token` cookie → redirects to `/` |
+| Method | Path                     | Auth | Description                                                             |
+| ------ | ------------------------ | ---- | ----------------------------------------------------------------------- |
+| `GET`  | `/api/auth/login`        | —    | Redirect to Scalekit OAuth page                                         |
+| `GET`  | `/api/auth/verify?code=` | —    | OAuth callback → sets `access_token` cookie → redirects to `/dashboard` |
+| `GET`  | `/api/auth/logout`       | —    | Deletes `access_token` cookie → redirects to `/`                        |
 
 ### Chat
 
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| `POST` | `/api/chat` | CORS `*` | Send a prompt to the AI. Supports multi-turn with `sessionId`. Use `preview: true` for playground (no persistence). |
-| `GET` | `/api/chat/config?botId=` | CORS `*` | Returns bot appearance (accent color, avatar, display name, welcome message). Public — no keys exposed. |
+| Method | Path                      | Auth     | Description                                                                                                         |
+| ------ | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| `POST` | `/api/chat`               | CORS `*` | Send a prompt to the AI. Supports multi-turn with `sessionId`. Use `preview: true` for playground (no persistence). |
+| `GET`  | `/api/chat/config?botId=` | CORS `*` | Returns bot appearance (accent color, avatar, display name, welcome message). Public — no keys exposed.             |
 
 **`POST /api/chat` body:**
+
 ```ts
 {
   prompt: string;                    // Required. The user message.
@@ -305,28 +314,28 @@ All endpoints return `{ success: boolean, message?: string, data?: any, error?: 
 
 ### Chatbots (all require session)
 
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/chatbots` | List all bots for the authenticated owner |
-| `POST` | `/api/chatbots` | Create a new bot (defaults provided for empty body) |
-| `GET` | `/api/chatbots/[botId]` | Get a single bot |
-| `PUT` | `/api/chatbots/[botId]` | Update bot config (regenerates knowledge string) |
+| Method   | Path                    | Description                                                                |
+| -------- | ----------------------- | -------------------------------------------------------------------------- |
+| `GET`    | `/api/chatbots`         | List all bots for the authenticated owner                                  |
+| `POST`   | `/api/chatbots`         | Create a new bot (defaults provided for empty body)                        |
+| `GET`    | `/api/chatbots/[botId]` | Get a single bot                                                           |
+| `PUT`    | `/api/chatbots/[botId]` | Update bot config (regenerates knowledge string)                           |
 | `DELETE` | `/api/chatbots/[botId]` | Delete bot + cascade (vectors, conversations, messages, documents, chunks) |
 
 ### Bot Documents (all require session)
 
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/chatbots/[botId]/documents` | List knowledge documents |
-| `POST` | `/api/chatbots/[botId]/documents` | Ingest a document (multipart file, URL scrape, or raw text) |
-| `DELETE` | `/api/chatbots/[botId]/documents/[docId]` | Delete a document + vectors |
+| Method   | Path                                      | Description                                                 |
+| -------- | ----------------------------------------- | ----------------------------------------------------------- |
+| `GET`    | `/api/chatbots/[botId]/documents`         | List knowledge documents                                    |
+| `POST`   | `/api/chatbots/[botId]/documents`         | Ingest a document (multipart file, URL scrape, or raw text) |
+| `DELETE` | `/api/chatbots/[botId]/documents/[docId]` | Delete a document + vectors                                 |
 
 ### Bot Analytics & Conversations (all require session)
 
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/chatbots/[botId]/analytics` | Per-bot stats: conversation count, message count, last active |
-| `GET` | `/api/chatbots/[botId]/conversations` | List conversations (up to 50) or get transcript with `?conversationId=` |
+| Method | Path                                  | Description                                                             |
+| ------ | ------------------------------------- | ----------------------------------------------------------------------- |
+| `GET`  | `/api/chatbots/[botId]/analytics`     | Per-bot stats: conversation count, message count, last active           |
+| `GET`  | `/api/chatbots/[botId]/conversations` | List conversations (up to 50) or get transcript with `?conversationId=` |
 
 ---
 
@@ -335,10 +344,7 @@ All endpoints return `{ success: boolean, message?: string, data?: any, error?: 
 Add this script tag just before your closing `</body>`:
 
 ```html
-<script
-  src="https://your-domain.com/chat_bot.js"
-  data-bot-id="MONGODB_OBJECT_ID"
-></script>
+<script src="https://your-domain.com/chat_bot.js" data-bot-id="MONGODB_OBJECT_ID"></script>
 ```
 
 The widget (`public/chat_bot.js`) is a **self-contained 5KB vanilla JS file** (no build step, no dependencies). It:
@@ -359,11 +365,11 @@ Each bot can have a knowledge base built from uploaded documents.
 
 ### Supported Sources
 
-| Source | Format | Description |
-|---|---|---|
-| File upload | PDF, DOCX, TXT, MD, CSV | Text extracted server-side |
-| URL scrape | URL | HTML fetched and stripped to plain text |
-| Raw text | Text | Directly indexed content |
+| Source      | Format                  | Description                             |
+| ----------- | ----------------------- | --------------------------------------- |
+| File upload | PDF, DOCX, TXT, MD, CSV | Text extracted server-side              |
+| URL scrape  | URL                     | HTML fetched and stripped to plain text |
+| Raw text    | Text                    | Directly indexed content                |
 
 ### Pipeline
 
@@ -383,21 +389,21 @@ At query time, `retrieve()` performs a similarity search against the bot's vecto
 
 ### AI Providers
 
-| Provider | Models | Embeddings |
-|---|---|---|
-| **Google Gemini** | `gemini-2.0-flash`, `gemini-1.5-flash`, `gemini-1.5-pro` | `text-embedding-004` (768d) |
-| **OpenAI** | `gpt-4o-mini`, `gpt-4o`, `gpt-4-turbo` | `text-embedding-3-small` (768d) |
+| Provider          | Models                                                   | Embeddings                      |
+| ----------------- | -------------------------------------------------------- | ------------------------------- |
+| **Google Gemini** | `gemini-2.0-flash`, `gemini-1.5-flash`, `gemini-1.5-pro` | `text-embedding-004` (768d)     |
+| **OpenAI**        | `gpt-4o-mini`, `gpt-4o`, `gpt-4-turbo`                   | `text-embedding-3-small` (768d) |
 
 Each bot carries its own provider selection, model override, and API key. No account-level fallback.
 
 ### Appearance
 
-| Setting | Default | Description |
-|---|---|---|
-| Accent color | `#e8440a` | Widget header & highlights |
-| Avatar URL | `""` | Custom avatar image |
-| Display name | `"Support Agent"` | Widget header name |
-| Welcome message | `"Hello! How can I assist you today?"` | Initial chat bubble |
+| Setting         | Default                                | Description                |
+| --------------- | -------------------------------------- | -------------------------- |
+| Accent color    | `#e8440a`                              | Widget header & highlights |
+| Avatar URL      | `""`                                   | Custom avatar image        |
+| Display name    | `"Support Agent"`                      | Widget header name         |
+| Welcome message | `"Hello! How can I assist you today?"` | Initial chat bubble        |
 
 ### Bot Status
 
@@ -440,9 +446,9 @@ git push origin feat/my-feature
 
 ### Commit hooks
 
-| Hook | Runs |
-|---|---|
-| `pre-commit` | `npm run lint` + `npm run format` |
+| Hook         | Runs                                              |
+| ------------ | ------------------------------------------------- |
+| `pre-commit` | `npm run lint` + `npm run format`                 |
 | `commit-msg` | commitlint — validates conventional commit format |
 
 ---

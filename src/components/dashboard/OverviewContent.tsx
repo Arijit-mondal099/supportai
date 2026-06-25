@@ -26,11 +26,7 @@ const formatDate = (iso: string | null) =>
       })
     : "—";
 
-export const OverviewContent = ({
-  analytics,
-}: {
-  analytics: AccountAnalytics;
-}) => {
+export const OverviewContent = ({ analytics }: { analytics: AccountAnalytics }) => {
   const { totals, daily, topAgents, recent } = analytics;
   const stats = [
     { label: "Agents", value: totals.agents, icon: Bot },
@@ -94,7 +90,9 @@ export const OverviewContent = ({
                   <Icon className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold tracking-tight">{s.value.toLocaleString("en-US")}</div>
+                  <div className="text-2xl font-bold tracking-tight">
+                    {s.value.toLocaleString("en-US")}
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>

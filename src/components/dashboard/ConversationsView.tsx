@@ -6,10 +6,7 @@ import { MessageSquare } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import {
-  useConversations,
-  useConversationThread,
-} from "@/hooks/use-conversations";
+import { useConversations, useConversationThread } from "@/hooks/use-conversations";
 
 const formatDate = (iso: string | null) =>
   iso
@@ -24,8 +21,7 @@ const formatDate = (iso: string | null) =>
 export const ConversationsView = ({ botId }: { botId: string }) => {
   const [selected, setSelected] = useState<string | null>(null);
   const { data: conversations, isLoading } = useConversations(botId);
-  const { data: messages, isLoading: threadLoading } =
-    useConversationThread(botId, selected);
+  const { data: messages, isLoading: threadLoading } = useConversationThread(botId, selected);
 
   if (isLoading) {
     return (

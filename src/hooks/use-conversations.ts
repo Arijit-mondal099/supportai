@@ -21,19 +21,14 @@ export function useConversations(botId: string) {
   return useQuery({
     queryKey: queryKeys.conversations.all(botId),
     queryFn: async () => {
-      const { data } = await apiClient.get(
-        `/api/chatbots/${botId}/conversations`,
-      );
+      const { data } = await apiClient.get(`/api/chatbots/${botId}/conversations`);
       if (!data.success) throw new Error(data.message || "Failed to load conversations");
       return data.conversations as ConversationItem[];
     },
   });
 }
 
-export function useConversationThread(
-  botId: string,
-  conversationId: string | null,
-) {
+export function useConversationThread(botId: string, conversationId: string | null) {
   return useQuery({
     queryKey: queryKeys.conversations.detail(botId, conversationId ?? ""),
     queryFn: async () => {

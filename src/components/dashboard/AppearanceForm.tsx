@@ -102,7 +102,11 @@ export const AppearanceForm = ({ bot }: { bot: SerializedBot }) => {
             </div>
             <div className="flex justify-end border-t border-border pt-4">
               <Button onClick={save} disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {updateMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
                 Save appearance
               </Button>
             </div>

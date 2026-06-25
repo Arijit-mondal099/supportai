@@ -152,7 +152,9 @@ export const BotConfigForm = ({ bot }: { bot: SerializedBot }) => {
                 <Input
                   id="businessName"
                   value={businessInfo.businessName}
-                  onChange={(e) => setBusinessInfo({ ...businessInfo, businessName: e.target.value })}
+                  onChange={(e) =>
+                    setBusinessInfo({ ...businessInfo, businessName: e.target.value })
+                  }
                   placeholder="Acme Inc."
                 />
               </div>
@@ -339,7 +341,11 @@ export const BotConfigForm = ({ bot }: { bot: SerializedBot }) => {
           <span className="text-xs text-destructive">An API key is required.</span>
         )}
         <Button onClick={save} disabled={updateMutation.isPending || (!hasKey && !apiKey.trim())}>
-          {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          {updateMutation.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4" />
+          )}
           Save changes
         </Button>
       </motion.div>
