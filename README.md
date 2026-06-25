@@ -1,133 +1,103 @@
+<div align="center">
+
 # SupportAI
+
+**AI-powered customer support, trained on your knowledge.**
 
 [![MIT License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/Arijit-mondal099/AI-Customer-Support-Chatbot/pulls)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![LangChain](https://img.shields.io/badge/LangChain-Core-blue?logo=chainlink)](https://js.langchain.com/)
 
-An intelligent, AI-powered customer support platform. Businesses create custom chatbots trained on their own knowledge base, embed them on any website, and let AI handle customer queries — all with a personalised tone and brand voice.
+[Features](#features) · [Demo](#demo) · [Getting Started](#getting-started) · [Architecture](#architecture) · [API](#api-reference) · [Contributing](#contributing)
 
-Built with **Next.js 16**, **Google Gemini / OpenAI**, **MongoDB**, and **Pinecone** for RAG.
+</div>
+
+---
+
+Build custom AI support agents that know your business. Configure personality, tone, and provider per agent. Add your knowledge — files, URLs, text, or Notion — and embed a zero-dependency chat widget on any site with one `<script>` tag. No third-party processors, no hidden costs, no data leaving your stack.
+
+<!-- Add demo GIF here -->
+
+<div align="center">
+
+[🚀 Get Started](#getting-started) · [🌐 Live Demo](https://supportai-seven.vercel.app)
+
+</div>
+
+## What is SupportAI?
+
+SupportAI is a full-stack platform for creating AI-powered customer support chatbots. Each agent carries its own persona, AI provider (Google Gemini or OpenAI), API key, and knowledge base — giving you complete control over data and cost.
+
+Built for businesses, developers, and SaaS products that want intelligent, on-brand support without sending customer data to third-party chat platforms. Your API keys, your knowledge, your infrastructure.
 
 ---
 
 ## Features
 
-| Feature                  | Description                                                                                                |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| **AI Chat**              | Natural, context-aware responses via Gemini or OpenAI                                                      |
-| **RAG Knowledge Base**   | Upload PDFs, DOCX, TXT, MD, CSV — or paste text / scrape a URL — and get semantic search over your content |
-| **Custom Persona**       | Configure bot name, communication tone, and personality for each agent                                     |
-| **Chat Playground**      | Test your bot live during configuration without persisting messages                                        |
-| **Embed Widget**         | Drop-in `<script>` tag — zero-dependency chat widget on any site                                           |
-| **Multi-provider**       | Per-agent provider selection: Google Gemini or OpenAI                                                      |
-| **Scalekit Auth**        | Enterprise B2B OAuth with automatic tenant isolation                                                       |
-| **Conversation History** | Multi-turn chats persisted per visitor session                                                             |
-| **Dashboard**            | Analytics, knowledge management, appearance theming, conversation viewer                                   |
-| **Plugins Page**         | Extensible plugin marketplace (Slack, WhatsApp, Zapier coming soon)                                        |
+| Icon | Feature                  | Description                                                                   |
+| ---- | ------------------------ | ----------------------------------------------------------------------------- |
+| 🤖   | **AI Chat**              | Natural, context-aware responses powered by Gemini or GPT                     |
+| 📚   | **RAG Knowledge Base**   | Upload PDFs, DOCX, TXT, MD, CSV — or paste text, scrape a URL, connect Notion |
+| 🔌   | **Notion Plugin**        | Index Notion pages and databases as knowledge sources                         |
+| 🎭   | **Custom Persona**       | Configure bot name, communication tone, and personality per agent             |
+| 🌐   | **Embed Widget**         | Drop-in `<script>` tag — 5KB vanilla JS, zero dependencies, any site          |
+| ⚡   | **Multi-provider**       | Per-agent choice of Google Gemini or OpenAI, with own model and API key       |
+| 💬   | **Conversation History** | Multi-turn chats persisted per visitor session                                |
+| 📊   | **Analytics Dashboard**  | Account-level stats, 14-day message chart, top agents, per-bot analytics      |
+| 🔐   | **Scalekit B2B Auth**    | Enterprise OAuth with automatic tenant isolation                              |
 
 ---
 
 ## Tech Stack
 
-### Framework & Language
+### Framework
 
-| Tech                                           | Purpose                   |
-| ---------------------------------------------- | ------------------------- |
-| [Next.js 16](https://nextjs.org/) (App Router) | Fullstack React framework |
-| [React 19](https://react.dev/)                 | UI library                |
-| [TypeScript](https://www.typescriptlang.org/)  | Type safety               |
-
-### UI & Styling
-
-| Tech                                        | Purpose                 |
-| ------------------------------------------- | ----------------------- |
-| [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first CSS       |
-| [Motion](https://motion.dev/)               | Animations              |
-| [Lucide React](https://lucide.dev/)         | Icons                   |
-| [shadcn/ui](https://ui.shadcn.com/)         | Primitive UI components |
-| [Recharts](https://recharts.org/)           | Analytics charts        |
-| [Sonner](https://sonner.emilkowal.ski/)     | Toast notifications     |
-
-### Database & Storage
-
-| Tech                                                                          | Purpose                 |
-| ----------------------------------------------------------------------------- | ----------------------- |
-| [MongoDB](https://www.mongodb.com/) via [Mongoose 9](https://mongoosejs.com/) | Primary data store      |
-| [Pinecone](https://www.pinecone.io/)                                          | Vector database for RAG |
+| Logo                                                                            | Name                                          | Purpose                                |
+| ------------------------------------------------------------------------------- | --------------------------------------------- | -------------------------------------- |
+| ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)          | [Next.js 16](https://nextjs.org/)             | Fullstack React framework (App Router) |
+| ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)               | [React 19](https://react.dev/)                | UI library                             |
+| ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript) | [TypeScript](https://www.typescriptlang.org/) | Type safety                            |
 
 ### AI / LLM
 
-| Tech                                                               | Purpose                             |
-| ------------------------------------------------------------------ | ----------------------------------- |
-| [Google Generative AI SDK](https://github.com/googleapis/js-genai) | Gemini chat + embeddings            |
-| [OpenAI SDK](https://platform.openai.com/docs/libraries)           | GPT chat + embeddings               |
-| [LangChain Core](https://js.langchain.com/)                        | Unified chat / embeddings interface |
-| [LangChain TextSplitters](https://js.langchain.com/)               | Document chunking                   |
+| Logo                                                                          | Name                                                           | Purpose                             |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------- |
+| ![Gemini](https://img.shields.io/badge/Gemini-API-4285F4?logo=google)         | [Google Generative AI](https://github.com/googleapis/js-genai) | Gemini chat + embeddings            |
+| ![OpenAI](https://img.shields.io/badge/OpenAI-API-412991?logo=openai)         | [OpenAI SDK](https://platform.openai.com/)                     | GPT chat + embeddings               |
+| ![LangChain](https://img.shields.io/badge/LangChain-Core-blue?logo=chainlink) | [LangChain Core](https://js.langchain.com/)                    | Unified chat / embeddings interface |
+
+### Database & Storage
+
+| Logo                                                                           | Name                                            | Purpose                 |
+| ------------------------------------------------------------------------------ | ----------------------------------------------- | ----------------------- |
+| ![MongoDB](https://img.shields.io/badge/MongoDB-9-47A248?logo=mongodb)         | [MongoDB / Mongoose 9](https://mongoosejs.com/) | Primary data store      |
+| ![Pinecone](https://img.shields.io/badge/Pinecone-Vector-764ABC?logo=pinecone) | [Pinecone](https://www.pinecone.io/)            | Vector database for RAG |
 
 ### Authentication
 
-| Tech                                  | Purpose                         |
-| ------------------------------------- | ------------------------------- |
-| [Scalekit SDK](https://scalekit.com/) | B2B OAuth with tenant isolation |
+| Logo                                                                  | Name                                  | Purpose                         |
+| --------------------------------------------------------------------- | ------------------------------------- | ------------------------------- |
+| ![Scalekit](https://img.shields.io/badge/Scalekit-B2B%20OAuth-6366F1) | [Scalekit SDK](https://scalekit.com/) | B2B OAuth with tenant isolation |
 
-### Data Fetching
+### UI & Styling
 
-| Tech                                               | Purpose                 |
-| -------------------------------------------------- | ----------------------- |
-| [TanStack React Query](https://tanstack.com/query) | Server state management |
-| [Axios](https://axios-http.com/)                   | HTTP client             |
-
-### File Processing
-
-| Tech                                                 | Purpose              |
-| ---------------------------------------------------- | -------------------- |
-| [pdf-parse](https://www.npmjs.com/package/pdf-parse) | PDF text extraction  |
-| [mammoth](https://github.com/mwilliamson/mammoth.js) | DOCX text extraction |
+| Logo                                                                                | Name                                        | Purpose                 |
+| ----------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------- |
+| ![Tailwind](https://img.shields.io/badge/Tailwind-CSS%20v4-06B6D4?logo=tailwindcss) | [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first CSS       |
+| ![Motion](https://img.shields.io/badge/Motion-React-FF6B6B)                         | [Motion](https://motion.dev/)               | Animations              |
+| ![shadcn](https://img.shields.io/badge/shadcn/ui-000000?logo=shadcnui)              | [shadcn/ui](https://ui.shadcn.com/)         | Primitive UI components |
+| ![Recharts](https://img.shields.io/badge/Recharts-Charts-8884D8)                    | [Recharts](https://recharts.org/)           | Analytics charts        |
 
 ### Dev Tooling
 
-| Tech                | Purpose                         |
-| ------------------- | ------------------------------- |
-| Husky + lint-staged | Pre-commit hooks                |
-| Commitlint          | Conventional commit enforcement |
-| ESLint + Prettier   | Code quality                    |
-
----
-
-## Architecture
-
-```
-Client (Browser)                  Server (Next.js 16)
-┌──────────────┐                  ┌──────────────────────────────┐
-│ Landing Page │                  │  API Routes                  │
-│  /           │ ◄──────────────► │  /api/auth/*                 │
-│              │                  │  /api/chat                   │
-│ Dashboard    │                  │  /api/chat/config            │
-│  /dashboard  │                  │  /api/chatbots/*             │
-│              │                  │                              │
-│ Embed Widget │                  │  Server Components           │
-│  chat_bot.js │                  │  page.tsx / layout.tsx       │
-└──────────────┘                  │  (fetch + render on server)  │
-                                  │                              │
-                                  │  Client Components            │
-                                  │  ("use client")              │
-                                  │  (interactivity + mutations) │
-                                  │                              │
-                                  │  Database                    │
-                                  │  MongoDB ──── Mongoose       │
-                                  │  Pinecone ──── Vectors       │
-                                  │                              │
-                                  │  Auth                        │
-                                  │  Scalekit ──── httpOnly      │
-                                  │  cookie (access_token)       │
-                                  └──────────────────────────────┘
-```
-
-### Key patterns
-
-- **Server / client boundary**: Server components fetch data (session, DB) and pass as props to client components. Client components handle all interactivity.
-- **Auth flow**: Scalekit OAuth → `/api/auth/verify` → sets `httpOnly` cookie → dashboard reads cookie on each request.
-- **Chat flow**: Embed widget → `POST /api/chat` → LangChain model → response streamed back → conversation persisted to MongoDB.
-- **Document flow**: Upload → extract text → chunk → embed → store vectors in Pinecone + metadata in MongoDB.
+| Logo                                                                      | Name                                       | Purpose              |
+| ------------------------------------------------------------------------- | ------------------------------------------ | -------------------- |
+| ![ESLint](https://img.shields.io/badge/ESLint-9-4B32C3?logo=eslint)       | [ESLint](https://eslint.org/)              | Code quality         |
+| ![Prettier](https://img.shields.io/badge/Prettier-3-F7B93E?logo=prettier) | [Prettier](https://prettier.io/)           | Code formatting      |
+| ![Husky](https://img.shields.io/badge/Husky-9-FF4088)                     | [Husky](https://typicode.github.io/husky/) | Pre-commit hooks     |
+| ![Commitlint](https://img.shields.io/badge/Commitlint-21-000000)          | [Commitlint](https://commitlint.js.org/)   | Conventional commits |
 
 ---
 
@@ -135,43 +105,38 @@ Client (Browser)                  Server (Next.js 16)
 
 ### Prerequisites
 
-- Node.js 18+ (recommended: 20+)
-- npm / yarn / pnpm / bun
-- A [MongoDB](https://www.mongodb.com/) instance (Atlas or local)
-- A [Scalekit](https://scalekit.com/) account (B2B OAuth)
-- A [Google AI Studio](https://aistudio.google.com/) API key (for Gemini) OR an [OpenAI](https://platform.openai.com/) API key
-- (Optional) A [Pinecone](https://www.pinecone.io/) index for RAG
+- **Node.js 20+** (recommended)
+- **npm** (other package managers not supported — see `.npmrc`)
+- **MongoDB** instance (Atlas or local)
+- **Scalekit** account for B2B OAuth
+- **Google AI Studio** API key (Gemini) **or** **OpenAI** API key
+- **Pinecone** index (optional, for RAG — requires 768-dimension cosine index)
 
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/ai-customer-support-chatbot.git
-cd ai-customer-support-chatbot
+git clone https://github.com/Arijit-mondal099/AI-Customer-Support-Chatbot.git
+cd AI-Customer-Support-Chatbot
 npm install
 ```
 
 ### Environment Variables
 
-Copy `.env.local` and fill in the values:
+Copy `.env.example` to `.env.local`:
 
-```env
-# Application
-NEXT_PUBLIC_API_URI=http://localhost:3000
-
-# Authentication (Scalekit)
-SCALEKIT_ENVIRONMENT_URL=your_scalekit_env_url
-SCALEKIT_CLIENT_ID=your_scalekit_client_id
-SCALEKIT_CLIENT_SECRET=your_scalekit_client_secret
-
-# Database
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/supportai
-
-# RAG / Vector Search (optional — feature gates Pinecone)
-PINECONE_API_KEY=your_pinecone_api_key
-PINECONE_INDEX=your_pinecone_index_name
+```bash
+cp .env.example .env.local
 ```
 
-All required vars are read in `src/lib/env.ts` — missing values will crash at module import.
+| Variable                   | Required | Description                                    |
+| -------------------------- | -------- | ---------------------------------------------- |
+| `NEXT_PUBLIC_API_URI`      | Yes      | Application URL (e.g. `http://localhost:3000`) |
+| `SCALEKIT_ENVIRONMENT_URL` | Yes      | Scalekit tenant environment URL                |
+| `SCALEKIT_CLIENT_ID`       | Yes      | Scalekit OAuth client ID                       |
+| `SCALEKIT_CLIENT_SECRET`   | Yes      | Scalekit OAuth client secret                   |
+| `MONGODB_URI`              | Yes      | MongoDB connection string                      |
+| `PINECONE_API_KEY`         | No       | Pinecone API key (required for RAG)            |
+| `PINECONE_INDEX`           | No       | Pinecone index name (required for RAG)         |
 
 ### Run
 
@@ -181,6 +146,69 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+### Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Arijit-mondal099/AI-Customer-Support-Chatbot)
+
+---
+
+## How It Works
+
+1. 🤖 **Create your agent** — configure name, business info, persona, AI provider (Gemini or OpenAI), and API key
+2. 📚 **Add your knowledge** — upload files (PDF, DOCX, TXT, MD, CSV), paste text, scrape URLs, or connect Notion pages
+3. 🌐 **Embed on your site** — copy one `<script>` tag. Zero dependencies. Works on any website.
+
+### RAG Pipeline
+
+```
+Knowledge Source → Extract Text → Chunk (1000 chars, 150 overlap)
+                                         ↓
+                                   Embed (768d)
+                                         ↓
+                                   Pinecone Vector Store
+                                         ↓
+User Query → Embed (768d) → Similarity Search → Top 5 Chunks
+                                         ↓
+                              LLM (Gemini / GPT) + System Prompt
+                                         ↓
+                                    Response
+```
+
+---
+
+## Knowledge Sources
+
+| Source      | Format                  | Description                                                              |
+| ----------- | ----------------------- | ------------------------------------------------------------------------ |
+| File Upload | PDF, DOCX, TXT, MD, CSV | Text extracted server-side, embedded, and indexed                        |
+| URL Scrape  | URL                     | HTML fetched, stripped to plain text                                     |
+| Raw Text    | Plain text              | Directly indexed content                                                 |
+| Notion      | Pages & Databases       | Connected via Notion Integration Token (configured in dashboard Plugins) |
+
+Each source is chunked (1000 characters, 150 overlap), embedded into 768-dimensional vectors, and stored in Pinecone. At query time, the top-5 most relevant chunks are retrieved and prepended to the LLM's system prompt.
+
+---
+
+## Embed Widget
+
+Add this script tag just before your closing `</body>` tag:
+
+```html
+<script src="https://your-domain.com/chat_bot.js" data-bot-id="MONGODB_OBJECT_ID"></script>
+```
+
+The widget is a **self-contained 5KB vanilla JavaScript file** — no build step, no dependencies, no framework required. It:
+
+1. Creates a floating chat button (bottom-right, dark theme)
+2. Generates an anonymous session ID stored in `localStorage`
+3. Fetches `/api/chat/config` for per-bot theming (accent color, display name, avatar, welcome message)
+4. Opens a responsive chat box with message history, typing indicator, and input
+5. Sends messages to `POST /api/chat` with `botId` and `sessionId`
+
+**Responsive:** Full-width on mobile (≤480px), 380px on tablet, 400×560 desktop.
+
+<!-- Add widget screenshot here -->
+
 ---
 
 ## Project Structure
@@ -188,19 +216,21 @@ Open [http://localhost:3000](http://localhost:3000).
 ```
 src/
 ├── app/
-│   ├── (user)/dashboard/        # Dashboard pages (protected)
-│   │   ├── account/             # Profile & logout
-│   │   ├── agents/              # Agent list + create wizard
-│   │   └── bots/[botId]/        # Bot detail (config, playgrd, etc.)
+│   ├── (user)/dashboard/        # Dashboard pages (protected by authentication)
+│   │   ├── account/             # Profile, API key info, logout
+│   │   ├── agents/              # Agent list + 4-step create wizard
+│   │   └── bots/[botId]/        # Per-bot: stats, playground, config, knowledge,
+│   │                            #   appearance, embed snippet, conversations
 │   ├── api/
-│   │   ├── auth/                # Login, verify (OAuth callback), logout
-│   │   ├── chat/                # Chat endpoint + widget config
-│   │   └── chatbots/            # Full CRUD + documents + analytics
-│   ├── globals.css              # Tailwind v4 theme & utilities
+│   │   ├── auth/                # OAuth login, callback verify, logout
+│   │   ├── chat/                # Chat endpoint + widget config (CORS open)
+│   │   ├── chatbots/            # Full CRUD + documents + analytics + conversations
+│   │   └── account/             # Account-level data
+│   ├── globals.css              # Tailwind v4 theme (warm palette)
 │   ├── layout.tsx               # Root layout
-│   ├── page.tsx                 # Landing page (redirects if logged in)
-│   ├── not-found.tsx            # Custom 404 page
-│   └── error.tsx                # Custom error boundary (with retry)
+│   ├── page.tsx                 # Landing page (redirects if authenticated)
+│   ├── not-found.tsx            # Custom 404
+│   └── error.tsx                # Error boundary with retry
 │
 ├── components/
 │   ├── dashboard/               # Dashboard client components
@@ -211,72 +241,47 @@ src/
 │   │   ├── OverviewChart.tsx, OverviewContent.tsx
 │   │   ├── PageTransition.tsx, TabBar.tsx
 │   │   └── ...
-│   ├── ui/                      # shadcn primitives
-│   │   ├── button.tsx, card.tsx, dialog.tsx, sidebar.tsx
-│   │   └── ...
-│   ├── Embed.tsx                # Embed snippet display
-│   ├── Navbar.tsx, Hero.tsx     # Landing page sections
-│   ├── Feature.tsx, Platform.tsx, UseCases.tsx
-│   ├── Resources.tsx, Pricing.tsx, Faq.tsx
-│   ├── Footer.tsx, Input.tsx
-│   └── ...
+│   ├── ui/                      # shadcn/ui primitives (button, card, dialog, etc.)
+│   └── ...                      # Landing page sections (Navbar, Hero, Features, etc.)
 │
-├── hooks/                       # React Query hooks
-│   ├── use-bots.ts              # CRUD mutations
+├── hooks/                       # TanStack React Query hooks
+│   ├── use-bots.ts              # Chatbot CRUD mutations
 │   ├── use-chat.ts              # Chat mutation
 │   ├── use-conversations.ts     # Conversation queries
 │   ├── use-documents.ts         # Document CRUD
-│   └── use-mobile.ts            # Responsive sidebar
+│   └── use-mobile.ts            # Responsive sidebar detection
 │
 ├── lib/                         # Server-side utilities
-│   ├── ai.ts                    # LangChain model factory
-│   ├── analytics.ts             # Account analytics aggregator
-│   ├── auth.ts                  # requireOwner() helper
-│   ├── axios.ts                 # Pre-configured Axios client
-│   ├── chatbots.ts              # Bot data access layer
-│   ├── db.ts                    # MongoDB singleton connection
-│   ├── env.ts                   # Env var validation
-│   ├── extractFile.ts           # PDF/DOCX/TXT text extraction
-│   ├── getUserSession.ts        # Cookie-based session reader
-│   ├── knowledge.ts             # System prompt builder
-│   ├── options.ts               # Provider/model definitions
-│   ├── providerKey.ts           # API key + model resolver
-│   ├── query-keys.ts            # React Query key factory
-│   ├── rag.ts                   # Pinecone vector store
-│   ├── scalekit.ts              # Scalekit client init
-│   └── utils.ts                 # cn() class merger
+│   ├── ai.ts                    # LangChain model factory (Gemini / OpenAI)
+│   ├── analytics.ts             # Account-level analytics aggregator
+│   ├── auth.ts                  # requireOwner() — tenant-isolated session guard
+│   ├── chatbot.model.ts         # Mongoose schema for bots
+│   ├── db.ts                    # MongoDB singleton connection (globalThis cache)
+│   ├── env.ts                   # Environment variable validation (Zod)
+│   ├── extractFile.ts           # PDF/DOCX/TXT/MD/CSV/Notion text extraction
+│   ├── knowledge.ts             # System prompt builder from bot config
+│   ├── options.ts               # Provider/model definitions (client-safe)
+│   ├── providerKey.ts           # Resolves per-bot API key and model
+│   ├── rag.ts                   # Pinecone vector store operations
+│   ├── scalekit.ts              # Scalekit client initialization
+│   └── utils.ts                 # cn() class name merger
 │
 ├── models/                      # Mongoose schemas
-│   ├── chatbot.model.ts         # Bot config (provider, appearance, ...)
+│   ├── chatbot.model.ts         # Bot config (provider, appearance, knowledge, etc.)
 │   ├── chunk.model.ts           # Vector chunk metadata
-│   ├── conversation.model.ts    # Visitor sessions
+│   ├── conversation.model.ts    # Visitor conversation sessions
 │   ├── document.model.ts        # Knowledge documents
-│   └── message.model.ts         # Chat messages
+│   ├── message.model.ts         # Chat messages
+│   └── owner.model.ts           # Account-level data (Notion token, API keys)
 │
 ├── providers/
-│   └── query-provider.tsx       # TanStack Query provider
+│   └── query-provider.tsx       # TanStack Query provider wrapper
 │
-└── proxy.ts                     # (misnamed — intended middleware, unused)
+└── proxy.ts                     # (Unused — intended middleware, not at middleware.ts)
+
+public/
+└── chat_bot.js                  # Embed widget (self-contained vanilla JS, 5KB)
 ```
-
----
-
-## Dashboard Features
-
-| Page                    | Path                                 | Description                                                                                                                |
-| ----------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| **Overview**            | `/dashboard`                         | Account-level stats: agent count, live agents, total conversations, 14-day message chart, top agents, recent conversations |
-| **Agents**              | `/dashboard/agents`                  | Grid of all agents with search, status badges, manage / delete actions                                                     |
-| **Create Agent**        | `/dashboard/agents/new`              | 4-step wizard: Basics → Persona → Model → Review                                                                           |
-| **Bot — Overview**      | `/dashboard/bots/[id]`               | Per-bot stats: conversations, messages, last active, details table                                                         |
-| **Bot — Playground**    | `/dashboard/bots/[id]/playground`    | Live chat UI to test your bot (messages not persisted)                                                                     |
-| **Bot — Config**        | `/dashboard/bots/[id]/config`        | Full config: name, status toggle, business info, persona, provider & API key                                               |
-| **Bot — Knowledge**     | `/dashboard/bots/[id]/knowledge`     | Add documents (text / URL / file upload), view status, delete                                                              |
-| **Bot — Appearance**    | `/dashboard/bots/[id]/appearance`    | Accent color, avatar, display name, welcome message with live preview                                                      |
-| **Bot — Embed**         | `/dashboard/bots/[id]/embed`         | Copy-paste `<script>` snippet + 4-step install guide                                                                       |
-| **Bot — Conversations** | `/dashboard/bots/[id]/conversations` | Two-panel: conversation list + message transcript viewer                                                                   |
-| **Account**             | `/dashboard/account`                 | Profile info, API key display, logout                                                                                      |
-| **Plugins**             | `/dashboard/plugins`                 | Plugin marketplace (Website Widget active; Slack, WhatsApp, Zapier, Webhooks, REST API — coming soon)                      |
 
 ---
 
@@ -286,149 +291,52 @@ All endpoints return `{ success: boolean, message?: string, data?: any, error?: 
 
 ### Authentication
 
-| Method | Path                     | Auth | Description                                                             |
-| ------ | ------------------------ | ---- | ----------------------------------------------------------------------- |
-| `GET`  | `/api/auth/login`        | —    | Redirect to Scalekit OAuth page                                         |
-| `GET`  | `/api/auth/verify?code=` | —    | OAuth callback → sets `access_token` cookie → redirects to `/dashboard` |
-| `GET`  | `/api/auth/logout`       | —    | Deletes `access_token` cookie → redirects to `/`                        |
+| Method | Endpoint                 | Auth | Description                                              |
+| ------ | ------------------------ | ---- | -------------------------------------------------------- |
+| `GET`  | `/api/auth/login`        | —    | Redirect to Scalekit OAuth                               |
+| `GET`  | `/api/auth/verify?code=` | —    | OAuth callback → sets cookie → redirects to `/dashboard` |
+| `GET`  | `/api/auth/logout`       | —    | Deletes cookie → redirects to `/`                        |
 
 ### Chat
 
-| Method | Path                      | Auth     | Description                                                                                                         |
-| ------ | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
-| `POST` | `/api/chat`               | CORS `*` | Send a prompt to the AI. Supports multi-turn with `sessionId`. Use `preview: true` for playground (no persistence). |
-| `GET`  | `/api/chat/config?botId=` | CORS `*` | Returns bot appearance (accent color, avatar, display name, welcome message). Public — no keys exposed.             |
+| Method | Endpoint                  | Auth     | Description                                                                         |
+| ------ | ------------------------- | -------- | ----------------------------------------------------------------------------------- |
+| `POST` | `/api/chat`               | CORS `*` | Send a prompt. Multi-turn via `sessionId`. Use `preview: true` to skip persistence. |
+| `GET`  | `/api/chat/config?botId=` | CORS `*` | Bot appearance (accent color, avatar, display name, welcome message)                |
 
-**`POST /api/chat` body:**
+### Chatbots
 
-```ts
-{
-  prompt: string;                    // Required. The user message.
-  botId?: string;                    // MongoDB ObjectId.
-  ownerId?: string;                  // Legacy fallback (requires status: "live").
-  sessionId?: string;                // For multi-turn persistence.
-  preview?: boolean;                 // Playground mode — no DB writes.
-  history?: { role, text }[];        // Prior turns for preview mode.
-}
-```
+| Method   | Endpoint                | Auth    | Description                                                                |
+| -------- | ----------------------- | ------- | -------------------------------------------------------------------------- |
+| `GET`    | `/api/chatbots`         | Session | List all bots for the authenticated owner                                  |
+| `POST`   | `/api/chatbots`         | Session | Create a new bot (defaults provided for empty body)                        |
+| `GET`    | `/api/chatbots/[botId]` | Session | Get a single bot                                                           |
+| `PUT`    | `/api/chatbots/[botId]` | Session | Update bot config                                                          |
+| `DELETE` | `/api/chatbots/[botId]` | Session | Delete bot + cascade (vectors, conversations, messages, documents, chunks) |
 
-### Chatbots (all require session)
+### Documents
 
-| Method   | Path                    | Description                                                                |
-| -------- | ----------------------- | -------------------------------------------------------------------------- |
-| `GET`    | `/api/chatbots`         | List all bots for the authenticated owner                                  |
-| `POST`   | `/api/chatbots`         | Create a new bot (defaults provided for empty body)                        |
-| `GET`    | `/api/chatbots/[botId]` | Get a single bot                                                           |
-| `PUT`    | `/api/chatbots/[botId]` | Update bot config (regenerates knowledge string)                           |
-| `DELETE` | `/api/chatbots/[botId]` | Delete bot + cascade (vectors, conversations, messages, documents, chunks) |
+| Method   | Endpoint                                  | Auth    | Description                                                       |
+| -------- | ----------------------------------------- | ------- | ----------------------------------------------------------------- |
+| `GET`    | `/api/chatbots/[botId]/documents`         | Session | List knowledge documents                                          |
+| `POST`   | `/api/chatbots/[botId]/documents`         | Session | Ingest document (multipart file, URL scrape, raw text, or Notion) |
+| `DELETE` | `/api/chatbots/[botId]/documents/[docId]` | Session | Delete document + vectors                                         |
 
-### Bot Documents (all require session)
+### Analytics & Conversations
 
-| Method   | Path                                      | Description                                                 |
-| -------- | ----------------------------------------- | ----------------------------------------------------------- |
-| `GET`    | `/api/chatbots/[botId]/documents`         | List knowledge documents                                    |
-| `POST`   | `/api/chatbots/[botId]/documents`         | Ingest a document (multipart file, URL scrape, or raw text) |
-| `DELETE` | `/api/chatbots/[botId]/documents/[docId]` | Delete a document + vectors                                 |
-
-### Bot Analytics & Conversations (all require session)
-
-| Method | Path                                  | Description                                                             |
-| ------ | ------------------------------------- | ----------------------------------------------------------------------- |
-| `GET`  | `/api/chatbots/[botId]/analytics`     | Per-bot stats: conversation count, message count, last active           |
-| `GET`  | `/api/chatbots/[botId]/conversations` | List conversations (up to 50) or get transcript with `?conversationId=` |
-
----
-
-## Embed Widget
-
-Add this script tag just before your closing `</body>`:
-
-```html
-<script src="https://your-domain.com/chat_bot.js" data-bot-id="MONGODB_OBJECT_ID"></script>
-```
-
-The widget (`public/chat_bot.js`) is a **self-contained 5KB vanilla JS file** (no build step, no dependencies). It:
-
-1. Creates a floating chat button (bottom-right)
-2. Generates an anonymous `session_id` (stored in localStorage)
-3. Fetches `/api/chat/config` for theming (accent color, avatar, name, welcome message)
-4. Opens a chat box with message history, typing indicator, and input
-5. Sends messages to `POST /api/chat` with `botId` and `sessionId`
-
-**Responsive:** Full-width on mobile (≤480px), 380px on tablet, 400×560 desktop default.
-
----
-
-## Knowledge Base & RAG
-
-Each bot can have a knowledge base built from uploaded documents.
-
-### Supported Sources
-
-| Source      | Format                  | Description                             |
-| ----------- | ----------------------- | --------------------------------------- |
-| File upload | PDF, DOCX, TXT, MD, CSV | Text extracted server-side              |
-| URL scrape  | URL                     | HTML fetched and stripped to plain text |
-| Raw text    | Text                    | Directly indexed content                |
-
-### Pipeline
-
-```
-Upload → extractTextFromFile() → splitText() (1000-char chunks, 150 overlap)
-→ embed via bot's provider (768-dim vectors) → upsert to Pinecone
-→ store metadata in MongoDB (Document + Chunk records)
-```
-
-At query time, `retrieve()` performs a similarity search against the bot's vectors and prepends the top-5 results to the system prompt.
-
-**Requires:** `PINECONE_API_KEY` and `PINECONE_INDEX` env vars. Without them, the RAG pipeline is skipped (the bot still answers from its system instruction alone).
-
----
-
-## Configuration
-
-### AI Providers
-
-| Provider          | Models                                                   | Embeddings                      |
-| ----------------- | -------------------------------------------------------- | ------------------------------- |
-| **Google Gemini** | `gemini-2.0-flash`, `gemini-1.5-flash`, `gemini-1.5-pro` | `text-embedding-004` (768d)     |
-| **OpenAI**        | `gpt-4o-mini`, `gpt-4o`, `gpt-4-turbo`                   | `text-embedding-3-small` (768d) |
-
-Each bot carries its own provider selection, model override, and API key. No account-level fallback.
-
-### Appearance
-
-| Setting         | Default                                | Description                |
-| --------------- | -------------------------------------- | -------------------------- |
-| Accent color    | `#e8440a`                              | Widget header & highlights |
-| Avatar URL      | `""`                                   | Custom avatar image        |
-| Display name    | `"Support Agent"`                      | Widget header name         |
-| Welcome message | `"Hello! How can I assist you today?"` | Initial chat bubble        |
-
-### Bot Status
-
-- **Draft** — Visible in dashboard for editing; embed widget will still connect if `botId` is provided directly.
-- **Live** — Required for the legacy `ownerId` embed path.
+| Method | Endpoint                              | Auth    | Description                                                  |
+| ------ | ------------------------------------- | ------- | ------------------------------------------------------------ |
+| `GET`  | `/api/chatbots/[botId]/analytics`     | Session | Per-bot stats (conversations, messages, last active)         |
+| `GET`  | `/api/chatbots/[botId]/conversations` | Session | List conversations or get transcript with `?conversationId=` |
 
 ---
 
 ## Contributing
 
-### Conventional Commits
-
-This project enforces [conventional commits](https://www.conventionalcommits.org/) via commitlint.
-
-```
-feat: add new feature
-fix: correct a bug
-docs: update documentation
-refactor: restructure code
-chore: tooling or dependency changes
-```
-
-### Development workflow
+### Workflow
 
 ```bash
+# Fork the repository
 # Create a feature branch
 git checkout -b feat/my-feature
 
@@ -444,15 +352,52 @@ npm run format:fix
 git push origin feat/my-feature
 ```
 
-### Commit hooks
+### Branch Naming
 
-| Hook         | Runs                                              |
-| ------------ | ------------------------------------------------- |
-| `pre-commit` | `npm run lint` + `npm run format`                 |
-| `commit-msg` | commitlint — validates conventional commit format |
+| Prefix   | Use Case                      |
+| -------- | ----------------------------- |
+| `feat/`  | New features                  |
+| `fix/`   | Bug fixes                     |
+| `docs/`  | Documentation changes         |
+| `chore/` | Tooling or dependency changes |
+
+### Conventional Commits
+
+| Type       | When to Use              |
+| ---------- | ------------------------ |
+| `feat`     | A new feature            |
+| `fix`      | A bug fix                |
+| `docs`     | Documentation only       |
+| `refactor` | Code restructuring       |
+| `chore`    | Tooling, config, or deps |
+
+### Commit Hooks
+
+| Hook         | Runs                                                  |
+| ------------ | ----------------------------------------------------- |
+| `pre-commit` | `npm run lint` + `npm run format` (runs on all files) |
+| `commit-msg` | `commitlint` — validates conventional commit format   |
+
+**Note:** Pre-commit runs `npm run format` (check), not `npm run format:fix`. Run `npm run format:fix` before committing to avoid hook failures.
+
+---
+
+## Roadmap
+
+- [x] File upload (PDF, DOCX, TXT, MD, CSV)
+- [x] URL scraping
+- [x] Notion plugin (pages & databases)
+- [ ] Slack integration
+- [ ] WhatsApp integration
+- [ ] Zapier integration
+- [ ] Webhooks
+- [ ] REST API access
+- [ ] Usage analytics per document
 
 ---
 
 ## License
 
-[MIT](LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+Released under the MIT License. See [LICENSE](LICENSE) for details.
