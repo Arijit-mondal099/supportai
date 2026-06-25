@@ -1,11 +1,34 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { Code2, ChevronRight, Globe, MessageCircle, Slack, Webhook, Zap } from "lucide-react";
+import {
+  BookOpen,
+  CheckCircle2,
+  Code2,
+  ChevronRight,
+  Globe,
+  Loader2,
+  MessageCircle,
+  Save,
+  Slack,
+  Webhook,
+  Zap,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const plugins = [
   {
@@ -25,6 +48,12 @@ const plugins = [
     desc: "Answer customers on WhatsApp Business.",
     icon: MessageCircle,
     status: "soon" as const,
+  },
+  {
+    name: "Notion",
+    desc: "Connect Notion databases and pages as knowledge sources.",
+    icon: BookOpen,
+    status: "dynamic" as const,
   },
   {
     name: "Zapier",
@@ -47,6 +76,41 @@ const plugins = [
 ];
 
 export default function PluginsPage() {
+  const [notionConnected, setNotionConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [tokenValue, setTokenValue] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/account")
+      .then((r) => r.json())
+      .then((data) => setNotionConnected(data.hasNotionIntegration ?? false))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const saveToken = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/account", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notionIntegrationToken: tokenValue }),
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNotionConnected(data.hasNotionIntegration);
+        setDialogOpen(false);
+      }
+    } catch {
+      /* ignore */
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -73,6 +137,9 @@ export default function PluginsPage() {
       >
         {plugins.map((p) => {
           const Icon = p.icon;
+          const isNotion = p.name === "Notion";
+          const resolvedStatus = isNotion ? (notionConnected ? "active" : "configure") : p.status;
+
           return (
             <motion.div
               key={p.name}
@@ -87,13 +154,16 @@ export default function PluginsPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary">
                     <Icon size={18} />
                   </div>
-                  {p.status === "active" ? (
+                  {resolvedStatus === "active" ? (
                     <Badge
                       variant="outline"
                       className="border-emerald-300 bg-emerald-50 text-emerald-700"
                     >
-                      Active
+                      <CheckCircle2 size={11} className="mr-1" />
+                      Connected
                     </Badge>
+                  ) : resolvedStatus === "configure" ? (
+                    <Badge variant="outline">Configure</Badge>
                   ) : (
                     <Badge variant="secondary">Coming soon</Badge>
                   )}
@@ -103,7 +173,19 @@ export default function PluginsPage() {
                     <CardTitle className="text-base">{p.name}</CardTitle>
                     <CardDescription className="mt-1">{p.desc}</CardDescription>
                   </div>
-                  {p.status === "active" ? (
+                  {isNotion ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setTokenValue("");
+                        setDialogOpen(true);
+                      }}
+                      disabled={loading}
+                    >
+                      Configure
+                    </Button>
+                  ) : resolvedStatus === "active" ? (
                     <Button
                       render={<Link href="/dashboard/agents" />}
                       nativeButton={false}
@@ -123,6 +205,33 @@ export default function PluginsPage() {
           );
         })}
       </motion.div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Notion Integration</DialogTitle>
+            <DialogDescription>
+              Paste your Notion internal integration token to connect your workspace.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="notion-token">Integration Token</Label>
+            <Input
+              id="notion-token"
+              type="password"
+              value={tokenValue}
+              onChange={(e) => setTokenValue(e.target.value)}
+              placeholder="ntn_..."
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={saveToken} disabled={saving || !tokenValue.trim()}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {saving ? "Saving…" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
