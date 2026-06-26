@@ -7,15 +7,10 @@ export const extractTextFromFile = async (file: File): Promise<string> => {
   const arrayBuffer = await file.arrayBuffer();
 
   if (ext === "pdf") {
-    // Disable pdfjs worker for Vercel serverless — worker files are not
-    // bundled in the serverless function, so they can't be resolved at runtime.
-    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "";
-
-    const { PDFParse } = await import("pdf-parse");
-    const parser = new PDFParse({ data: new Uint8Array(arrayBuffer) });
-    const result = await parser.getText();
-    return result.text ?? "";
+    const { extractText } = await import("unpdf");
+    const buffer = Buffer.from(arrayBuffer);
+    const { text } = await extractText(buffer, { mergePages: true });
+    return text;
   }
 
   if (ext === "docx") {
