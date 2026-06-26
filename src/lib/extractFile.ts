@@ -8,8 +8,7 @@ export const extractTextFromFile = async (file: File): Promise<string> => {
 
   if (ext === "pdf") {
     const { extractText } = await import("unpdf");
-    const buffer = Buffer.from(arrayBuffer);
-    const { text } = await extractText(buffer, { mergePages: true });
+    const { text } = await extractText(new Uint8Array(arrayBuffer), { mergePages: true });
     return text;
   }
 
