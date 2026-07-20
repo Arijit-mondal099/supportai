@@ -23,7 +23,7 @@
   style.textContent = `
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap');
 
-    :root {
+    #chatbot-toggle, #chatbot-box {
       --ink:    #0d0d12;
       --paper:  #f7f5f0;
       --cream:  #faf8f4;
