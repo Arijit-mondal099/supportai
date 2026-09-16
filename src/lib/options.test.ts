@@ -59,7 +59,7 @@ describe("option lists", () => {
   });
 
   it("includes expected default models", () => {
-    expect(MODELS.gemini.map((m) => m.value)).toContain("gemini-2.0-flash");
+    expect(MODELS.gemini.map((m) => m.value)).toContain("gemini-2.5-flash-lite");
     expect(MODELS.openai.map((m) => m.value)).toContain("gpt-4o-mini");
   });
 });

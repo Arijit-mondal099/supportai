@@ -4,11 +4,16 @@ import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { defaultModel, type Provider } from "./options";
 
-const GEMINI_EMBED_MODEL = "text-embedding-004";
+const GEMINI_EMBED_MODEL = "gemini-embedding-001";
 const OPENAI_EMBED_MODEL = "text-embedding-3-small";
 
 // Pin embedding output to one dimension so a single Pinecone index works across
-// providers. Gemini text-embedding-004 is natively 768; OpenAI is reduced to 768.
+// providers. gemini-embedding-001 defaults to 3072 dims and is truncated via
+// MRL to 768; OpenAI text-embedding-3-small is reduced to 768.
+// NOTE: switching the Gemini embedding model changes the embedding space.
+// Existing vectors indexed with a previous model (e.g. text-embedding-004)
+// must be re-ingested (delete + addDocuments) before the new model returns
+// valid similarity results - mixing spaces in one index gives bogus scores.
 export const EMBED_DIMENSIONS = 768;
 
 export const getChatModel = (provider: Provider, apiKey: string, model?: string): BaseChatModel => {
@@ -30,7 +35,11 @@ export const getEmbeddings = (provider: Provider, apiKey: string): Embeddings =>
     });
   }
   if (provider === "gemini") {
-    return new GoogleGenerativeAIEmbeddings({ apiKey, model: GEMINI_EMBED_MODEL });
+    return new GoogleGenerativeAIEmbeddings({
+      apiKey,
+      model: GEMINI_EMBED_MODEL,
+      outputDimensionality: EMBED_DIMENSIONS,
+    });
   }
   throw new Error(`Embeddings are not supported for provider "${provider}".`);
 };
