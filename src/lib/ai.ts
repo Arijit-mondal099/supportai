@@ -4,7 +4,7 @@ import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { defaultModel, type Provider } from "./options";
 
-const GEMINI_EMBED_MODEL = "text-embedding-004";
+const GEMINI_EMBED_MODEL = "gemini-embedding-2";
 const OPENAI_EMBED_MODEL = "text-embedding-3-small";
 
 // Pin embedding output to one dimension so a single Pinecone index works across
