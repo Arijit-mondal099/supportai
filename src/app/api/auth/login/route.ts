@@ -1,8 +1,8 @@
 import { ENV } from "@/lib/env";
 import { getScalekit } from "@/lib/scalekit";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const URL = getScalekit().getAuthorizationUrl(`${ENV.API_URI}/api/auth/verify`);
 
