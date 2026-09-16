@@ -72,13 +72,7 @@ export const Navbar = ({ email }: { email: string | null | undefined }) => {
         <div className="flex items-center gap-4 sm:gap-10">
           <Link href="/" aria-label="SupportAI home" className="shrink-0">
             <span className="flex items-center gap-2">
-              <Image
-                src="/favicon.png"
-                alt="logo"
-                width={32}
-                height={32}
-                className="h-8 w-8"
-              />
+              <Image src="/favicon.png" alt="logo" width={32} height={32} className="h-8 w-8" />
               <span className="font-title text-lg font-bold tracking-tight text-zinc-900">
                 Support<span className="text-zinc-400">AI</span>
               </span>
