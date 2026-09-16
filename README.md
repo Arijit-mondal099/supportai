@@ -1,6 +1,7 @@
 <div align="center">
 
-# <a href="https://supportai-seven.vercel.app" style="color: white; text-decoration: none;"><img alt="SupportAI" src="public/favicon.png" width="40" height="40" align="center" style="vertical-align: middle; margin-right: 2px; margin-bottom: 4px;"> SupportAI</a>
+<img alt="SupportAI" src="public/favicon.png" width="40" height="40" align="center" style="vertical-align: middle; margin-right: 2px; margin-bottom: 4px;">
+<a href="https://supportai-seven.vercel.app" style="color: white; text-decoration: none; font-size: 18px; font-weight: bold;">SupportAI</a>
 
 **AI-powered customer support, trained on your knowledge.**
 
