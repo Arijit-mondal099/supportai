@@ -3,6 +3,11 @@ import { ENV } from "./env";
 
 let _redis: Redis | null = null;
 
+export const CACHE_PREFIX = "support_ai:";
+
+const withPrefix = (key: string): string =>
+  key.startsWith(CACHE_PREFIX) ? key : `${CACHE_PREFIX}${key}`;
+
 export const isCacheEnabled = (): boolean =>
   !!(ENV.UPSTASH_REDIS_REST_URL && ENV.UPSTASH_REDIS_TOKEN);
 
@@ -26,10 +31,11 @@ export class Cache {
   static async get<T>(key: string): Promise<T | null> {
     const redis = getRedis();
     if (!redis) return null;
+    const prefixedKey = withPrefix(key);
     try {
-      return (await redis.get<T>(key)) ?? null;
+      return (await redis.get<T>(prefixedKey)) ?? null;
     } catch (err) {
-      console.error(`Cache GET failed for key "${key}"`, err);
+      console.error(`Cache GET failed for key "${prefixedKey}"`, err);
       return null;
     }
   }
@@ -37,10 +43,11 @@ export class Cache {
   static async set<T>(key: string, value: T, ttlSeconds: number): Promise<void> {
     const redis = getRedis();
     if (!redis) return;
+    const prefixedKey = withPrefix(key);
     try {
-      await redis.set(key, value, { ex: ttlSeconds });
+      await redis.set(prefixedKey, value, { ex: ttlSeconds });
     } catch (err) {
-      console.error(`Cache SET failed for key "${key}"`, err);
+      console.error(`Cache SET failed for key "${prefixedKey}"`, err);
     }
   }
 
@@ -48,7 +55,7 @@ export class Cache {
     const redis = getRedis();
     if (!redis) return;
     try {
-      const keys = Array.isArray(key) ? key : [key];
+      const keys = (Array.isArray(key) ? key : [key]).map(withPrefix);
       await redis.del(...keys);
     } catch (err) {
       console.error(`Cache DEL failed for key "${key}"`, err);
@@ -58,11 +65,12 @@ export class Cache {
   static async deletePattern(pattern: string): Promise<void> {
     const redis = getRedis();
     if (!redis) return;
+    const prefixedPattern = withPrefix(pattern);
     try {
-      const keys = await redis.keys(pattern);
+      const keys = await redis.keys(prefixedPattern);
       if (keys.length) await redis.del(...keys);
     } catch (err) {
-      console.error(`Cache pattern-delete failed for "${pattern}"`, err);
+      console.error(`Cache pattern-delete failed for "${prefixedPattern}"`, err);
     }
   }
 
