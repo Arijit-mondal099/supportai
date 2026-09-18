@@ -34,6 +34,10 @@ interface UpdateBotPayload {
     avatarUrl?: string;
     displayName?: string;
     welcomeMessage?: string;
+    greeting?: string;
+    headline?: string;
+    placeholder?: string;
+    prompts?: { label: string; prompt: string }[];
   };
 }
 

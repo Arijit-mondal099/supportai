@@ -16,6 +16,10 @@ export interface SerializedBot {
     avatarUrl: string;
     displayName: string;
     welcomeMessage: string;
+    greeting: string;
+    headline: string;
+    placeholder: string;
+    prompts: { label: string; prompt: string }[];
   };
   provider: Provider;
   model: string;
@@ -29,6 +33,21 @@ const maskKey = (key: string): string => {
   if (!key) return "";
   if (key.length <= 4) return "••••";
   return `${"•".repeat(Math.min(key.length - 4, 24))}${key.slice(-4)}`;
+};
+
+// Prompt chips stored in Mongo can be partial or legacy-shaped; normalize to
+// clean label/prompt pairs, falling back to defaults when nothing usable exists.
+const serializePrompts = (value: unknown): { label: string; prompt: string }[] => {
+  if (!Array.isArray(value)) return APPEARANCE_DEFAULTS.prompts;
+  const clean = value
+    .filter(
+      (p): p is { label: unknown; prompt: unknown } =>
+        !!p && typeof p === "object" && "label" in p && "prompt" in p,
+    )
+    .map((p) => ({ label: String(p.label), prompt: String(p.prompt) }))
+    .filter((p) => p.label.trim() && p.prompt.trim())
+    .slice(0, 6);
+  return clean.length ? clean : APPEARANCE_DEFAULTS.prompts;
 };
 
 // Shape a lean/hydrated Mongo doc into a plain, client-serializable object (no secrets).
@@ -57,6 +76,10 @@ export const serializeBot = (bot: any): SerializedBot => {
       avatarUrl: look.avatarUrl ?? APPEARANCE_DEFAULTS.avatarUrl,
       displayName: look.displayName ?? APPEARANCE_DEFAULTS.displayName,
       welcomeMessage: look.welcomeMessage ?? APPEARANCE_DEFAULTS.welcomeMessage,
+      greeting: look.greeting ?? APPEARANCE_DEFAULTS.greeting,
+      headline: look.headline ?? APPEARANCE_DEFAULTS.headline,
+      placeholder: look.placeholder ?? APPEARANCE_DEFAULTS.placeholder,
+      prompts: serializePrompts(look.prompts),
     },
     provider: normalizeProvider(bot.provider as string),
     model: (bot.model as string) ?? "",

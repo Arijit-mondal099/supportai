@@ -75,6 +75,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
     bot.appearance.avatarUrl = body.appearance.avatarUrl ?? bot.appearance.avatarUrl;
     bot.appearance.displayName = body.appearance.displayName ?? bot.appearance.displayName;
     bot.appearance.welcomeMessage = body.appearance.welcomeMessage ?? bot.appearance.welcomeMessage;
+    bot.appearance.greeting = body.appearance.greeting ?? bot.appearance.greeting;
+    bot.appearance.headline = body.appearance.headline ?? bot.appearance.headline;
+    bot.appearance.placeholder = body.appearance.placeholder ?? bot.appearance.placeholder;
+    if (body.appearance.prompts !== undefined) bot.appearance.prompts = body.appearance.prompts;
   }
 
   // Regenerate the system instruction from the latest config.

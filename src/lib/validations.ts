@@ -52,6 +52,18 @@ export const chatbotUpdateSchema = z.object({
       avatarUrl: z.string().optional(),
       displayName: z.string().min(1).max(100).optional(),
       welcomeMessage: z.string().optional(),
+      greeting: z.string().max(60).optional(),
+      headline: z.string().max(120).optional(),
+      placeholder: z.string().max(80).optional(),
+      prompts: z
+        .array(
+          z.object({
+            label: z.string().min(1).max(40),
+            prompt: z.string().min(1).max(200),
+          }),
+        )
+        .max(6)
+        .optional(),
     })
     .optional(),
 });
