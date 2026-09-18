@@ -1132,7 +1132,10 @@
   send_btn.onclick = sendMessage;
 
   chat_input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    // Skip while an IME composition is active: Enter confirms the
+    // candidate first, and submitting mid-composition would send
+    // incomplete text (mirrors the isComposing guard on input).
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
       sendMessage();
     }
