@@ -12,9 +12,13 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
+// Appearance edits must reach embeds on the next load: the response is
+// deliberately NOT edge-cacheable (no s-maxage). Freshness comes from the
+// server Redis cache instead, which the chatbot PUT/DELETE routes invalidate
+// on every save.
 const cacheHeaders = {
   ...corsHeaders,
-  "Cache-Control": `public, s-maxage=${CONFIG_CACHE_TTL}, stale-while-revalidate=${CONFIG_CACHE_TTL * 2}`,
+  "Cache-Control": "private, no-store",
 };
 
 export async function GET(request: NextRequest) {
