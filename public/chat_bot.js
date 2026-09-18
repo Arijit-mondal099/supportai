@@ -1182,7 +1182,6 @@
           sessionId: session_id,
         }),
       });
-      clearTimeout(timer);
       activeRequest = null;
 
       let val = null;
@@ -1224,7 +1223,6 @@
         );
       }
     } catch (error) {
-      clearTimeout(timer);
       activeRequest = null;
       typing.remove();
       // A reset aborts the request on purpose: no error bubble in the new chat.
@@ -1236,6 +1234,10 @@
           add_message("Sorry, something went wrong. Please try again.", "model");
         }
       }
+    } finally {
+      // Stay armed through body parsing: fetch resolves on headers, so a
+      // stalled body would otherwise hang the composer past the timeout.
+      clearTimeout(timer);
     }
     sending = false;
     syncAskButtons();
