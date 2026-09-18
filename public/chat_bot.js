@@ -607,18 +607,19 @@
   wrapper.style.setProperty("--accent", "#c96442");
   // Collapse the host element out of the page's layout: it carries only
   // fixed-position shadow content, so it takes no space and shrugs off host
-  // rules like `body{display:flex}` or `div{margin:...}`. Inline styles win
-  // over host stylesheets here. (No pointer-events/overflow tweaks: the
-  // former is inherited by the widget, the latter is unnecessary at zero size,
-  // and fixed descendants escape clipping regardless.)
-  wrapper.style.position = "absolute";
-  wrapper.style.top = "0";
-  wrapper.style.left = "0";
-  wrapper.style.width = "0";
-  wrapper.style.height = "0";
-  wrapper.style.margin = "0";
-  wrapper.style.padding = "0";
-  wrapper.style.border = "0";
+  // rules like `body{display:flex}` or `div{margin:...}`. Declarations carry
+  // inline !important priority so host `!important` rules cannot override
+  // them either. (No pointer-events/overflow tweaks: the former is inherited
+  // by the widget, the latter is unnecessary at zero size, and fixed
+  // descendants escape clipping regardless.)
+  wrapper.style.setProperty("position", "absolute", "important");
+  wrapper.style.setProperty("top", "0", "important");
+  wrapper.style.setProperty("left", "0", "important");
+  wrapper.style.setProperty("width", "0", "important");
+  wrapper.style.setProperty("height", "0", "important");
+  wrapper.style.setProperty("margin", "0", "important");
+  wrapper.style.setProperty("padding", "0", "important");
+  wrapper.style.setProperty("border", "0", "important");
   const shadow = wrapper.attachShadow({ mode: "open" });
   shadow.appendChild(style);
 
