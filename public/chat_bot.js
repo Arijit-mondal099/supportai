@@ -763,6 +763,15 @@
       activeRequest.abort();
       activeRequest = null;
     }
+    // Rotate the session so the next reply starts a fresh server-side
+    // conversation; otherwise it would still be conditioned on the history
+    // just cleared from the screen.
+    session_id = "s_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    try {
+      localStorage.setItem("supportai_session_id", session_id);
+    } catch {
+      // Storage unavailable (e.g. private mode): memory-only session.
+    }
     messages.innerHTML = "";
     hero.style.display = "flex";
     chat_input.value = "";
