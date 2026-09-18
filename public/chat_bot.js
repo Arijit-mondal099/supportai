@@ -118,7 +118,7 @@
       height: 660px;
       max-height: calc(100vh - 140px);
       background: var(--panel);
-      border: 0;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: none;
       display: none;
