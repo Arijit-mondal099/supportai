@@ -755,6 +755,14 @@
   syncScrollFade();
 
   function resetChat() {
+    // Invalidate any in-flight reply first: the aborted request settles at
+    // once (unblocking the composer), and the generation check in
+    // sendMessage drops its response so it can never land in the fresh chat.
+    chatGeneration++;
+    if (activeRequest) {
+      activeRequest.abort();
+      activeRequest = null;
+    }
     messages.innerHTML = "";
     hero.style.display = "flex";
     chat_input.value = "";
@@ -768,6 +776,8 @@
   // Send button is always visible; enabled only when there is text to send,
   // no reply is currently pending, and no rate-limit cooldown is active.
   let sending = false;
+  let activeRequest = null;
+  let chatGeneration = 0;
   let cooldownUntil = 0;
   let rateLimitTimer = null;
   let rateLimitNode = null;
@@ -1125,6 +1135,7 @@
     if (!text || sending || Date.now() < cooldownUntil) return;
     sending = true;
     syncAskButtons();
+    const generation = chatGeneration;
 
     add_message(text, "user");
     chat_input.value = "";
@@ -1143,6 +1154,7 @@
     scrollBottom();
 
     const ctrl = new AbortController();
+    activeRequest = ctrl;
     const timer = setTimeout(function () {
       ctrl.abort();
     }, 60000);
@@ -1159,6 +1171,7 @@
         }),
       });
       clearTimeout(timer);
+      activeRequest = null;
 
       let val = null;
       try {
@@ -1168,6 +1181,13 @@
       }
 
       typing.remove();
+      if (generation !== chatGeneration) {
+        // New chat started while this request was in flight; drop the stale
+        // response instead of appending it under the restored hero.
+        sending = false;
+        syncAskButtons();
+        return;
+      }
       if (val && val.success && val.data && val.data.text) {
         add_message(val.data.text, "model");
       } else if (res.status === 429) {
@@ -1193,11 +1213,16 @@
       }
     } catch (error) {
       clearTimeout(timer);
+      activeRequest = null;
       typing.remove();
-      if (error && error.name === "AbortError") {
-        add_message("That took too long. Please check your connection and try again.", "model");
-      } else {
-        add_message("Sorry, something went wrong. Please try again.", "model");
+      // A reset aborts the request on purpose: no error bubble in the new chat.
+      // The 60s timeout keeps its generation, so its message still shows.
+      if (generation === chatGeneration) {
+        if (error && error.name === "AbortError") {
+          add_message("That took too long. Please check your connection and try again.", "model");
+        } else {
+          add_message("Sorry, something went wrong. Please try again.", "model");
+        }
       }
     }
     sending = false;
