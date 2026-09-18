@@ -26,6 +26,10 @@ export interface IChatbot {
     avatarUrl: string;
     displayName: string;
     welcomeMessage: string;
+    greeting: string;
+    headline: string;
+    placeholder: string;
+    prompts: { label: string; prompt: string }[];
   };
   knowledge: string;
   createdAt: Date;
@@ -37,6 +41,17 @@ export const APPEARANCE_DEFAULTS = {
   avatarUrl: "",
   displayName: "Support Agent",
   welcomeMessage: "Hello! How can I assist you today?",
+  greeting: "Hi there,",
+  headline: "Welcome back! How can I help?",
+  placeholder: "Ask me anything...",
+  prompts: [
+    { label: "Track my order", prompt: "Where is my order?" },
+    { label: "Talk to support", prompt: "How do I contact human support?" },
+    { label: "Pricing & plans", prompt: "What are your pricing plans?" },
+    { label: "Fix an issue", prompt: "Help me troubleshoot an issue" },
+    { label: "FAQs", prompt: "Show me your most frequently asked questions" },
+    { label: "More", prompt: "What else can you do?" },
+  ],
 };
 
 const chatbotSchema = new Schema<IChatbot>(
@@ -67,6 +82,13 @@ const chatbotSchema = new Schema<IChatbot>(
       avatarUrl: { type: String, default: APPEARANCE_DEFAULTS.avatarUrl },
       displayName: { type: String, default: APPEARANCE_DEFAULTS.displayName },
       welcomeMessage: { type: String, default: APPEARANCE_DEFAULTS.welcomeMessage },
+      greeting: { type: String, default: APPEARANCE_DEFAULTS.greeting },
+      headline: { type: String, default: APPEARANCE_DEFAULTS.headline },
+      placeholder: { type: String, default: APPEARANCE_DEFAULTS.placeholder },
+      prompts: {
+        type: [{ label: { type: String }, prompt: { type: String } }],
+        default: APPEARANCE_DEFAULTS.prompts,
+      },
     },
     knowledge: { type: String, default: "" },
   },
