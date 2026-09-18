@@ -111,9 +111,9 @@
       height: 660px;
       max-height: calc(100vh - 140px);
       background: var(--panel);
-      border: 1px solid var(--line);
+      border: 0;
       border-radius: var(--radius);
-      box-shadow: 0 32px 72px rgba(19,19,19,.14), 0 6px 20px rgba(19,19,19,.08);
+      box-shadow: none;
       display: none;
       flex-direction: column;
       overflow: hidden;
