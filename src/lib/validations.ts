@@ -62,6 +62,7 @@ export const chatbotUpdateSchema = z.object({
             prompt: z.string().min(1).max(200),
           }),
         )
+        .min(1, "Add at least one shortcut prompt.")
         .max(6)
         .optional(),
     })
