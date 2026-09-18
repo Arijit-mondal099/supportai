@@ -120,7 +120,7 @@
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      box-shadow: 0 32px 72px rgba(19,19,19,.14), 0 6px 20px rgba(19,19,19,.08);
+      box-shadow: none;
       display: none;
       flex-direction: column;
       overflow: hidden;
