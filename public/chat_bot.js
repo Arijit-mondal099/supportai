@@ -7,7 +7,10 @@
   const API_URI = API_ORIGIN + "/api/chat";
 
   if (!bot_id && !owner_id) {
-    alert("Oops! Bot ID not found. Please contact the website administrator.");
+    // Never alert() on someone else's page: log for the integrator instead.
+    console.error(
+      "[SupportAI] Missing data-bot-id on the embed script tag; chat widget not started.",
+    );
     return;
   }
 
@@ -41,6 +44,10 @@
       /* Warm paper theme — sampled from the app's oklch tokens
          (light: card/foreground/muted/secondary/border/input/primary) */
       color-scheme: light dark;
+      /* Cut inherited host typography: body line-height / text-align from
+         the embedding page must not leak through the shadow boundary. */
+      line-height: 1.5;
+      text-align: start;
       --ink:    #3d3929;
       --sub:    #83827d;
       --faint:  #b4b2a7;
@@ -598,6 +605,21 @@
   const wrapper = document.createElement("div");
   wrapper.id = "supportai-chatbot-wrapper";
   wrapper.style.setProperty("--accent", "#c96442");
+  // Collapse the host element out of the page's layout: it carries only
+  // fixed-position shadow content, so it takes no space and shrugs off host
+  // rules like `body{display:flex}` or `div{margin:...}`. Declarations carry
+  // inline !important priority so host `!important` rules cannot override
+  // them either. (No pointer-events/overflow tweaks: the former is inherited
+  // by the widget, the latter is unnecessary at zero size, and fixed
+  // descendants escape clipping regardless.)
+  wrapper.style.setProperty("position", "absolute", "important");
+  wrapper.style.setProperty("top", "0", "important");
+  wrapper.style.setProperty("left", "0", "important");
+  wrapper.style.setProperty("width", "0", "important");
+  wrapper.style.setProperty("height", "0", "important");
+  wrapper.style.setProperty("margin", "0", "important");
+  wrapper.style.setProperty("padding", "0", "important");
+  wrapper.style.setProperty("border", "0", "important");
   const shadow = wrapper.attachShadow({ mode: "open" });
   shadow.appendChild(style);
 
