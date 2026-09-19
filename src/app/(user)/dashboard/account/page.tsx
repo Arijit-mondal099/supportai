@@ -1,62 +1,99 @@
 import { redirect } from "next/navigation";
-import { ChevronRight, KeyRound, LogOut, Mail } from "lucide-react";
+import { ArrowUpRight, KeyRound, LogOut } from "lucide-react";
+import Link from "next/link";
 import { requireOwner } from "@/lib/auth";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+const initials = (email: string) => {
+  const name = email.split("@")[0] ?? "";
+  const parts = name.split(/[._-]+/).filter(Boolean);
+  const letters =
+    parts.length > 1
+      ? `${parts[0][0]}${parts[parts.length - 1][0]}`
+      : (name.slice(0, 2) || "··").toUpperCase();
+  return letters.toUpperCase();
+};
 
 export default async function SettingsPage() {
   const owner = await requireOwner();
   if (!owner) redirect("/api/auth/login");
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-6 pb-10">
       <div>
-        <span className="inline-flex items-center gap-2 bg-gray-50 border border-zinc-200 rounded-xl pl-3 pr-1 py-1 shadow-sm mb-3">
-          <span className="flex items-center gap-2 font-title text-[10px] font-normal uppercase tracking-tight text-zinc-900">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-            SETTINGS
-          </span>
-          <span className="flex items-center justify-center h-6 w-6 rounded-md border border-zinc-200 bg-zinc-100 text-zinc-700">
-            <ChevronRight className="w-4 h-4" />
-          </span>
-        </span>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground">Your account.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">Settings</h1>
+        <p className="mt-1 max-w-md text-sm text-muted-foreground">
+          Your account and how signing in works.
+        </p>
       </div>
 
-      <Card className="transition-all hover:shadow-md">
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>The account you&apos;re signed in with.</CardDescription>
+      {/* Profile */}
+      <Card className="overflow-hidden">
+        <CardHeader className="flex flex-row items-center gap-3 space-y-0">
+          <Avatar className="size-11 rounded-2xl">
+            <AvatarFallback className="rounded-2xl bg-secondary font-title text-sm font-bold">
+              <span className="inline-block scale-[0.85] leading-none">
+                {initials(owner.email)}
+              </span>
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <CardTitle className="truncate text-lg">{owner.email || "—"}</CardTitle>
+            <CardDescription>Signed in</CardDescription>
+          </div>
+          <Badge variant="secondary" className="shrink-0">
+            Owner
+          </Badge>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary">
-              <Mail size={16} />
-            </span>
-            <div>
-              <p className="text-xs text-muted-foreground">Email</p>
-              <p className="text-sm font-medium">{owner.email || "—"}</p>
-            </div>
-          </div>
-          <div className="border-t border-border pt-4">
-            <Button variant="outline" render={<a href="/api/auth/logout" />} nativeButton={false}>
-              <LogOut className="h-4 w-4" /> Log out
-            </Button>
-          </div>
-        </CardContent>
+        <CardFooter className="flex items-center justify-between gap-2">
+          <span className="text-[13px] text-muted-foreground">
+            Signing out ends this session on this device.
+          </span>
+          <Button variant="outline" render={<a href="/api/auth/logout" />} nativeButton={false}>
+            <LogOut className="h-4 w-4" /> Log out
+          </Button>
+        </CardFooter>
       </Card>
 
-      <Card className="transition-all hover:shadow-md">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <KeyRound size={16} /> API keys
-          </CardTitle>
-          <CardDescription>
-            Each agent uses its own provider and API key. Set them in the agent&apos;s{" "}
-            <span className="font-medium text-foreground">Model &amp; key</span> tab.
-          </CardDescription>
+      {/* API keys */}
+      <Card className="overflow-hidden">
+        <CardHeader className="flex flex-row items-center gap-3 space-y-0">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-secondary text-foreground">
+            <KeyRound className="h-4 w-4" aria-hidden />
+          </span>
+          <div>
+            <CardTitle className="text-lg">API keys</CardTitle>
+            <CardDescription>
+              Each agent carries its own provider key — there&apos;s nothing to configure here.
+            </CardDescription>
+          </div>
         </CardHeader>
+        <CardContent>
+          <p className="rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+            Keys live on the agent, not the account. To add or rotate one, open the agent and go to
+            its <span className="font-medium text-foreground">Model &amp; key</span> tab.
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href="/dashboard/agents" />}
+            nativeButton={false}
+          >
+            Open agents <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   );

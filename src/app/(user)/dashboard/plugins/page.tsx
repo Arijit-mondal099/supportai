@@ -3,10 +3,26 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { BookOpen, CheckCircle2, ChevronRight, Globe, Link2Off, Loader2, Save } from "lucide-react";
+import {
+  ArrowUpRight,
+  BookOpen,
+  CheckCircle2,
+  ExternalLink,
+  Globe,
+  Link2Off,
+  Loader2,
+  Save,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +33,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
+const ease = { type: "spring", bounce: 0.22, duration: 0.5 } as const;
 
 const plugins = [
   {
@@ -71,34 +89,37 @@ export default function PluginsPage() {
 
   const disconnect = () => saveToken("");
 
+  const connectedCount = (notionConnected ? 1 : 0) + 1;
+
   return (
-    <div className="space-y-6">
-      <div>
-        <span className="inline-flex items-center gap-2 bg-gray-50 border border-zinc-200 rounded-xl pl-3 pr-1 py-1 shadow-sm mb-3">
-          <span className="flex items-center gap-2 font-title text-[10px] font-normal uppercase tracking-tight text-zinc-900">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-            PLUGINS
-          </span>
-          <span className="flex items-center justify-center h-6 w-6 rounded-md border border-zinc-200 bg-zinc-100 text-zinc-700">
-            <ChevronRight className="w-4 h-4" />
-          </span>
-        </span>
-        <h1 className="text-2xl font-bold tracking-tight">Plugins</h1>
-        <p className="text-sm text-muted-foreground">
-          Connect your agents to the tools you already use.
-        </p>
-      </div>
+    <div className="mx-auto w-full max-w-6xl space-y-6 pb-10">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={ease}
+        className="flex flex-wrap items-end justify-between gap-4"
+      >
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">Plugins</h1>
+          <p className="mt-1 max-w-md text-sm text-muted-foreground">
+            {loading
+              ? "Connect your agents to the tools you already use."
+              : `${connectedCount} of ${plugins.length} connected`}
+          </p>
+        </div>
+      </motion.div>
 
       <motion.div
         initial="hidden"
         animate="visible"
-        variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
+        className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
         {plugins.map((p) => {
           const Icon = p.icon;
           const isNotion = p.name === "Notion";
-          const resolvedStatus = isNotion ? (notionConnected ? "active" : "configure") : "active";
+          const resolvedStatus = isNotion ? (notionConnected ? "active" : "setup") : "active";
 
           return (
             <motion.div
@@ -107,34 +128,41 @@ export default function PluginsPage() {
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0 },
               }}
-              transition={{ type: "spring", bounce: 0.3, duration: 0.5 }}
+              transition={ease}
+              className="h-full"
             >
-              <Card className="gap-0 transition-all hover:-translate-y-1 hover:shadow-md">
-                <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary">
-                    <Icon size={18} />
-                  </div>
-                  {resolvedStatus === "active" ? (
+              <Card className="flex h-full flex-col overflow-hidden transition-shadow hover:shadow-md">
+                <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border bg-secondary text-foreground">
+                    <Icon size={19} aria-hidden />
+                  </span>
+                  {loading && isNotion ? (
+                    <Badge variant="secondary" className="shrink-0">
+                      Checking…
+                    </Badge>
+                  ) : resolvedStatus === "active" ? (
                     <Badge
                       variant="outline"
-                      className="border-emerald-300 bg-emerald-50 text-emerald-700"
+                      className="shrink-0 border-emerald-300 bg-emerald-50 text-emerald-700"
                     >
-                      <CheckCircle2 size={11} className="mr-1" />
+                      <CheckCircle2 size={11} className="mr-1" aria-hidden />
                       Connected
                     </Badge>
                   ) : (
-                    <Badge variant="outline">Configure</Badge>
+                    <Badge variant="secondary" className="shrink-0">
+                      Not connected
+                    </Badge>
                   )}
                 </CardHeader>
-                <CardContent className="mt-4 space-y-4">
-                  <div>
-                    <CardTitle className="text-base">{p.name}</CardTitle>
-                    <CardDescription className="mt-1">{p.desc}</CardDescription>
-                  </div>
+                <CardContent>
+                  <CardTitle className="text-base">{p.name}</CardTitle>
+                  <CardDescription className="mt-1">{p.desc}</CardDescription>
+                </CardContent>
+                <CardFooter className="mt-auto flex items-center gap-2">
                   {isNotion ? (
-                    <div className="flex gap-2">
+                    <>
                       <Button
-                        variant="outline"
+                        variant={notionConnected ? "outline" : "default"}
                         size="sm"
                         onClick={() => {
                           setTokenValue("");
@@ -150,13 +178,13 @@ export default function PluginsPage() {
                           size="sm"
                           onClick={disconnect}
                           disabled={saving}
-                          className="text-destructive hover:text-destructive"
+                          className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
                         >
-                          <Link2Off size={13} className="mr-1" />
+                          <Link2Off size={13} className="mr-1" aria-hidden />
                           Disconnect
                         </Button>
                       )}
-                    </div>
+                    </>
                   ) : (
                     <Button
                       render={<Link href="/dashboard/agents" />}
@@ -164,10 +192,10 @@ export default function PluginsPage() {
                       variant="outline"
                       size="sm"
                     >
-                      Configure
+                      Open agents <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
                     </Button>
                   )}
-                </CardContent>
+                </CardFooter>
               </Card>
             </motion.div>
           );
@@ -177,24 +205,49 @@ export default function PluginsPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Notion Integration</DialogTitle>
-            <DialogDescription>
-              Paste your Notion internal integration token to connect your workspace.
-            </DialogDescription>
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-secondary">
+                <BookOpen size={18} aria-hidden />
+              </span>
+              <div>
+                <DialogTitle>Notion integration</DialogTitle>
+                <DialogDescription>
+                  Paste your Notion internal integration token to connect your workspace.
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor="notion-token">Integration Token</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="notion-token">Integration token</Label>
             <Input
               id="notion-token"
               type="password"
               value={tokenValue}
               onChange={(e) => setTokenValue(e.target.value)}
               placeholder="ntn_..."
+              autoComplete="new-password"
+              className="font-mono"
             />
+            <p className="text-xs text-muted-foreground">
+              Create one at{" "}
+              <a
+                href="https://www.notion.so/my-integrations"
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium underline underline-offset-2 hover:text-foreground"
+              >
+                notion.so/my-integrations <ExternalLink className="inline h-3 w-3" aria-hidden />
+              </a>
+              , then invite it to the pages you want to import.
+            </p>
           </div>
           <DialogFooter>
             <Button onClick={() => saveToken(tokenValue)} disabled={saving || !tokenValue.trim()}>
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {saving ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              ) : (
+                <Save className="h-4 w-4" aria-hidden />
+              )}
               {saving ? "Saving…" : "Save"}
             </Button>
           </DialogFooter>

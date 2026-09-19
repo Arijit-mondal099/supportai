@@ -1,14 +1,21 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
+const SectionSkeleton = ({ titleWidth, descWidth }: { titleWidth: string; descWidth: string }) => (
+  <CardHeader className="flex flex-row items-center gap-3 space-y-0">
+    <Skeleton className="h-9 w-9 shrink-0 rounded-xl" />
+    <div className="space-y-2">
+      <Skeleton className={`h-5 ${titleWidth}`} />
+      <Skeleton className={`h-3 ${descWidth}`} />
+    </div>
+  </CardHeader>
+);
+
 export default function Loading() {
   return (
-    <div className="space-y-5 pb-20">
+    <div className="space-y-4" aria-hidden>
       <Card>
-        <CardHeader>
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-3 w-48" />
-        </CardHeader>
+        <SectionSkeleton titleWidth="w-16" descWidth="w-48" />
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
             <Skeleton className="h-3 w-20" />
@@ -16,16 +23,13 @@ export default function Loading() {
           </div>
           <div className="space-y-1.5">
             <Skeleton className="h-3 w-10" />
-            <Skeleton className="h-7 w-24 rounded-lg" />
+            <Skeleton className="h-9 w-48 rounded-xl" />
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-3 w-56" />
-        </CardHeader>
+        <SectionSkeleton titleWidth="w-16" descWidth="w-56" />
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -49,10 +53,7 @@ export default function Loading() {
       </Card>
 
       <Card>
-        <CardHeader>
-          <Skeleton className="h-5 w-14" />
-          <Skeleton className="h-3 w-56" />
-        </CardHeader>
+        <SectionSkeleton titleWidth="w-14" descWidth="w-56" />
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -72,10 +73,7 @@ export default function Loading() {
       </Card>
 
       <Card>
-        <CardHeader>
-          <Skeleton className="h-5 w-24" />
-          <Skeleton className="h-3 w-56" />
-        </CardHeader>
+        <SectionSkeleton titleWidth="w-24" descWidth="w-56" />
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -94,8 +92,9 @@ export default function Loading() {
         </CardContent>
       </Card>
 
-      <div className="sticky bottom-0 -mx-1 flex items-center justify-end border-t border-border bg-background/80 px-1 py-3 backdrop-blur">
-        <Skeleton className="h-9 w-32" />
+      <div className="sticky bottom-4 flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-lg">
+        <Skeleton className="h-5 w-28 rounded-full" />
+        <Skeleton className="h-8 w-32 rounded-lg" />
       </div>
 
       <Card className="border-destructive/30">
