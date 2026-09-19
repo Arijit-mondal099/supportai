@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -27,92 +28,123 @@ const SkeletonPulse = ({ className }: { className?: string }) => (
 
 export default function Loading() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <span className="mb-3 inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-gray-50 px-3 py-1 shadow-sm">
-            <SkeletonPulse className="h-2.5 w-2.5 rounded-full" />
-            <SkeletonPulse className="h-3 w-16" />
-            <SkeletonPulse className="h-6 w-6 rounded-md" />
-          </span>
-          <div className="space-y-2">
-            <SkeletonPulse className="h-7 w-32" />
-            <SkeletonPulse className="h-4 w-48" />
-          </div>
+    <div className="mx-auto w-full max-w-6xl space-y-6 pb-10" aria-hidden>
+      {/* Header — title + two actions */}
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="space-y-2">
+          <SkeletonPulse className="h-9 w-44 sm:h-10 sm:w-52" />
+          <SkeletonPulse className="h-4 w-64 max-w-full sm:w-80" />
         </div>
-        <SkeletonPulse className="h-9 w-28" />
+        <div className="flex shrink-0 items-center gap-2">
+          <SkeletonPulse className="h-8 w-28 rounded-lg" />
+          <SkeletonPulse className="h-8 w-28 rounded-lg" />
+        </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Counter strip — label + icon tile, big number, caption, meter */}
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <SkeletonPulse className="h-4 w-20" />
-              <SkeletonPulse className="h-4 w-4" />
+          <Card key={i} className="overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+              <SkeletonPulse className="h-3 w-16" />
+              <SkeletonPulse className="h-8 w-8 rounded-lg" />
             </CardHeader>
             <CardContent>
-              <SkeletonPulse className="h-8 w-16" />
+              <SkeletonPulse className="h-10 w-20" />
+              <SkeletonPulse className="mt-2 h-3.5 w-28" />
+              <SkeletonPulse className="mt-3 h-1 w-full rounded-full" />
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <SkeletonPulse className="h-5 w-24" />
-            <SkeletonPulse className="h-3 w-40" />
+      {/* Activity chart + top agents rail */}
+      <div className="grid items-start gap-4 lg:grid-cols-5">
+        <Card className="overflow-hidden lg:col-span-3">
+          <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+            <div className="space-y-2">
+              <SkeletonPulse className="h-6 w-36" />
+              <SkeletonPulse className="h-4 w-52" />
+            </div>
+            <SkeletonPulse className="h-7 w-[136px] rounded-lg" />
           </CardHeader>
           <CardContent>
             <SkeletonPulse className="h-[240px] w-full" />
+            <Separator className="my-4" />
+            <div className="grid grid-cols-3 gap-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="space-y-2 rounded-lg border border-border px-3 py-2.5">
+                  <SkeletonPulse className="h-2.5 w-16" />
+                  <SkeletonPulse className="h-4 w-12" />
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <SkeletonPulse className="h-5 w-24" />
+
+        <Card className="lg:col-span-2">
+          <CardHeader className="flex flex-row items-start justify-between gap-3">
+            <div className="space-y-2">
+              <SkeletonPulse className="h-6 w-28" />
+              <SkeletonPulse className="h-4 w-40" />
+            </div>
+            <SkeletonPulse className="h-7 w-12 rounded-lg" />
           </CardHeader>
-          <CardContent className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center justify-between">
-                <SkeletonPulse className="h-4 w-28" />
-                <SkeletonPulse className="h-4 w-8" />
-              </div>
-            ))}
+          <CardContent>
+            <ul className="space-y-1">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <li key={i} className="flex items-center gap-3 px-2 py-2.5">
+                  <SkeletonPulse className="h-6 w-6 shrink-0 rounded-full" />
+                  <span className="min-w-0 flex-1 space-y-2">
+                    <SkeletonPulse className="h-4 w-3/4" />
+                    <SkeletonPulse className="h-1 w-full rounded-full" />
+                  </span>
+                  <SkeletonPulse className="h-4 w-8 shrink-0" />
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
       </div>
 
+      {/* Recent conversations — avatar + name, badge, timestamp */}
       <Card>
-        <CardHeader>
-          <SkeletonPulse className="h-5 w-40" />
-          <SkeletonPulse className="h-3 w-48" />
+        <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+          <div className="space-y-2">
+            <SkeletonPulse className="h-6 w-48" />
+            <SkeletonPulse className="h-4 w-56" />
+          </div>
+          <SkeletonPulse className="h-5 w-16 rounded-full" />
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableHead>
-                  <SkeletonPulse className="h-4 w-12" />
+                  <SkeletonPulse className="h-3 w-12" />
                 </TableHead>
                 <TableHead>
-                  <SkeletonPulse className="h-4 w-16" />
+                  <SkeletonPulse className="h-3 w-16" />
                 </TableHead>
                 <TableHead className="text-right">
-                  <SkeletonPulse className="ml-auto h-4 w-16" />
+                  <SkeletonPulse className="ml-auto h-3 w-20" />
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Array.from({ length: 4 }).map((_, i) => (
+              {Array.from({ length: 6 }).map((_, i) => (
                 <TableRow key={i}>
                   <TableCell>
-                    <SkeletonPulse className="h-4 w-24" />
+                    <span className="flex items-center gap-3.5 py-0.5">
+                      <SkeletonPulse className="h-6 w-6 shrink-0 rounded-full" />
+                      <SkeletonPulse className="h-4 w-24" />
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <SkeletonPulse className="h-4 w-8" />
+                    <SkeletonPulse className="h-5 w-10 rounded-full" />
                   </TableCell>
                   <TableCell className="text-right">
-                    <SkeletonPulse className="ml-auto h-4 w-20" />
+                    <SkeletonPulse className="ml-auto h-4 w-24" />
                   </TableCell>
                 </TableRow>
               ))}

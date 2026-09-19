@@ -1,11 +1,30 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Clock, MessageSquare, Users } from "lucide-react";
+import {
+  ArrowUpRight,
+  Clock,
+  Code2,
+  FlaskConical,
+  MessageSquare,
+  Settings2,
+  Users,
+} from "lucide-react";
 import { requireOwner } from "@/lib/auth";
 import { getChatbot } from "@/lib/chatbots";
 import { MODELS, PROVIDERS } from "@/lib/options";
 import { ConversationModel } from "@/models/conversation.model";
 import { MessageModel } from "@/models/message.model";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const formatDate = (iso: string | null) =>
   iso
@@ -36,9 +55,24 @@ export default async function BotOverview({ params }: { params: Promise<{ botId:
     : null;
 
   const stats = [
-    { label: "Conversations", value: conversations.toLocaleString(), icon: Users },
-    { label: "Messages", value: messages.toLocaleString(), icon: MessageSquare },
-    { label: "Last active", value: formatDate(lastActiveAt), icon: Clock },
+    {
+      label: "Conversations",
+      value: conversations.toLocaleString(),
+      caption: "Sessions handled",
+      icon: Users,
+    },
+    {
+      label: "Messages",
+      value: messages.toLocaleString(),
+      caption: "Replies sent",
+      icon: MessageSquare,
+    },
+    {
+      label: "Last active",
+      value: formatDate(lastActiveAt),
+      caption: latest ? "Most recent session" : "No sessions yet",
+      icon: Clock,
+    },
   ];
 
   const details = [
@@ -54,44 +88,106 @@ export default async function BotOverview({ params }: { params: Promise<{ botId:
       label: "Model",
       value: MODELS[bot.provider]?.find((m) => m.value === bot.model)?.label || "Default",
     },
-    { label: "API key", value: bot.hasApiKey ? bot.apiKeyMasked : "Not set" },
   ];
 
   return (
-    <div className="space-y-5">
-      <div className="grid gap-4 sm:grid-cols-3">
+    <div className="space-y-4">
+      {/* Counters */}
+      <div className="grid gap-3 sm:grid-cols-3">
         {stats.map((s) => {
           const Icon = s.icon;
           return (
-            <Card key={s.label} className="transition-all hover:-translate-y-0.5 hover:shadow-md">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+            <Card
+              key={s.label}
+              className="bg-pinstripe group relative overflow-hidden transition-shadow hover:shadow-md"
+            >
+              <div className="absolute inset-0 bg-card/85" aria-hidden />
+              <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-1">
+                <span className="font-title text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
                   {s.label}
-                </CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+                </span>
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-foreground shadow-sm transition-transform group-hover:-translate-y-0.5">
+                  <Icon className="h-4 w-4" aria-hidden />
+                </span>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold tracking-tight">{s.value}</div>
+              <CardContent className="relative">
+                <div className="truncate font-heading text-3xl font-bold tracking-tight tabular-nums">
+                  {s.value}
+                </div>
+                <p className="mt-1 truncate text-[13px] text-muted-foreground">{s.caption}</p>
               </CardContent>
             </Card>
           );
         })}
       </div>
 
-      <Card className="transition-all hover:shadow-md">
-        <CardHeader>
-          <CardTitle className="text-base">Details</CardTitle>
+      {/* Details + next steps */}
+      <Card className="overflow-hidden">
+        <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+          <div>
+            <CardTitle className="text-lg">Agent details</CardTitle>
+            <CardDescription>How this agent is set up right now</CardDescription>
+          </div>
+          <CardAction>
+            <Badge variant={bot.status === "live" ? "default" : "secondary"}>
+              {bot.status === "live" ? "Live" : "Draft"}
+            </Badge>
+          </CardAction>
         </CardHeader>
         <CardContent>
-          <dl className="divide-y divide-border">
+          <dl className="divide-y divide-border rounded-xl border border-border bg-muted/40">
             {details.map((it) => (
-              <div key={it.label} className="flex items-center justify-between gap-4 py-2.5">
-                <dt className="text-sm text-muted-foreground">{it.label}</dt>
+              <div key={it.label} className="flex items-center justify-between gap-4 px-4 py-2.5">
+                <dt className="shrink-0 text-sm text-muted-foreground">{it.label}</dt>
                 <dd className="truncate text-sm font-medium">{it.value}</dd>
               </div>
             ))}
+            <div className="flex items-center justify-between gap-4 px-4 py-2.5">
+              <dt className="shrink-0 text-sm text-muted-foreground">API key</dt>
+              <dd>
+                {bot.hasApiKey ? (
+                  <span className="font-mono text-[13px] font-medium">{bot.apiKeyMasked}</span>
+                ) : (
+                  <span className="text-sm font-medium text-destructive">Not set</span>
+                )}
+              </dd>
+            </div>
           </dl>
         </CardContent>
+        <CardFooter className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href={`/dashboard/bots/${bot._id}/playground`} />}
+            nativeButton={false}
+          >
+            <FlaskConical className="h-3.5 w-3.5" /> Test in playground
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href={`/dashboard/bots/${bot._id}/config`} />}
+            nativeButton={false}
+          >
+            <Settings2 className="h-3.5 w-3.5" /> Edit config
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href={`/dashboard/bots/${bot._id}/embed`} />}
+            nativeButton={false}
+          >
+            <Code2 className="h-3.5 w-3.5" /> Get embed code
+          </Button>
+          <Button
+            size="sm"
+            render={<Link href={`/dashboard/bots/${bot._id}/conversations`} />}
+            nativeButton={false}
+            className="sm:ml-auto"
+          >
+            View conversations <ArrowUpRight className="h-3.5 w-3.5" />
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   );

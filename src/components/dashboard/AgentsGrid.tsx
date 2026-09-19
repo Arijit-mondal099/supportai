@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Bot, ChevronRight, MoreVertical, Plus, Settings2, Trash2 } from "lucide-react";
+import { ArrowUpRight, Bot, MoreVertical, Plus, Settings2, Trash2 } from "lucide-react";
 import type { SerializedBot } from "@/lib/chatbots";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,24 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDeleteBot } from "@/hooks/use-bots";
+
+const PROVIDER_LABEL: Record<string, string> = { gemini: "Gemini", openai: "OpenAI" };
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+const editedLabel = (iso: string | null) =>
+  iso
+    ? `Edited ${new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric" })}`
+    : "Not edited yet";
+
+const ease = { type: "spring", bounce: 0.22, duration: 0.55 } as const;
+
 const NewAgentButton = () => (
   <Button render={<Link href="/dashboard/agents/new" />} nativeButton={false}>
     <Plus className="h-4 w-4" /> New agent
@@ -37,6 +56,8 @@ export function AgentsGrid({ bots }: { bots: SerializedBot[] }) {
   const [items, setItems] = useState(bots);
   const [pending, setPending] = useState<SerializedBot | null>(null);
   const deleteMutation = useDeleteBot();
+
+  const live = items.filter((b) => b.status === "live").length;
 
   const confirmDelete = async () => {
     if (!pending) return;
@@ -51,108 +72,158 @@ export function AgentsGrid({ bots }: { bots: SerializedBot[] }) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <span className="inline-flex items-center gap-2 bg-gray-50 border border-zinc-200 rounded-xl pl-3 pr-1 py-1 shadow-sm mb-3">
-            <span className="flex items-center gap-2 font-title text-[10px] font-normal uppercase tracking-tight text-zinc-900">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-              AGENTS
-            </span>
-            <span className="flex items-center justify-center h-6 w-6 rounded-md border border-zinc-200 bg-zinc-100 text-zinc-700">
-              <ChevronRight className="w-4 h-4" />
-            </span>
-          </span>
-          <h1 className="text-2xl font-bold tracking-tight">Agents</h1>
-          <p className="text-sm text-muted-foreground">Create and manage your AI support agents.</p>
+    <div className="mx-auto w-full max-w-6xl space-y-6 pb-10">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={ease}
+        className="flex flex-wrap items-end justify-between gap-4"
+      >
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">Agents</h1>
+          <p className="mt-1 max-w-md text-sm text-muted-foreground">
+            {items.length === 0
+              ? "Create and manage your AI support agents."
+              : `${items.length} ${items.length === 1 ? "agent" : "agents"} · ${live} live`}
+          </p>
         </div>
-        <NewAgentButton />
-      </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <NewAgentButton />
+        </div>
+      </motion.div>
 
       {items.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Bot size={22} />
-          </div>
-          <CardTitle className="text-base">No agents yet</CardTitle>
-          <p className="mb-4 mt-1 max-w-xs text-sm text-muted-foreground">
-            Create your first agent to start answering customers.
-          </p>
-          <NewAgentButton />
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={ease}
+        >
+          <Card className="bg-pinstripe relative overflow-hidden text-center">
+            <div className="absolute inset-0 bg-card/88" aria-hidden />
+            <CardContent className="relative px-6 py-14">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
+                <Bot className="h-7 w-7" aria-hidden />
+              </div>
+              <h2 className="mx-auto mt-5 max-w-md text-2xl font-bold tracking-tight text-balance">
+                No agents yet
+              </h2>
+              <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+                Create your first agent to start answering customers around the clock.
+              </p>
+              <div className="mt-6 flex justify-center">
+                <NewAgentButton />
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       ) : (
         <motion.div
           initial="hidden"
           animate="visible"
           variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {items.map((b) => (
-            <motion.div
-              key={b._id}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0 },
-              }}
-              transition={{ type: "spring", bounce: 0.3, duration: 0.5 }}
-            >
-              <Card className="gap-0 transition-all hover:-translate-y-1 hover:shadow-md">
-                <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary">
-                      <Bot size={18} />
+          {items.map((b) => {
+            const isLive = b.status === "live";
+            return (
+              <motion.div
+                key={b._id}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                transition={ease}
+                className="h-full"
+              >
+                <Card className="group flex h-full flex-col overflow-hidden transition-shadow hover:shadow-md">
+                  <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="relative shrink-0">
+                        <Avatar className="size-11 rounded-xl">
+                          <AvatarFallback className="rounded-xl bg-secondary font-title text-sm font-bold">
+                            <span className="inline-block scale-[0.85] leading-none">
+                              {initials(b.name)}
+                            </span>
+                          </AvatarFallback>
+                        </Avatar>
+                        <span
+                          title={isLive ? "Live" : "Draft"}
+                          aria-hidden
+                          className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full ring-2 ring-card ${isLive ? "bg-emerald-500" : "bg-zinc-400"}`}
+                        />
+                      </span>
+                      <div className="min-w-0">
+                        <CardTitle className="truncate text-base">
+                          <Link
+                            href={`/dashboard/bots/${b._id}`}
+                            className="transition-colors group-hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                          >
+                            {b.name}
+                          </Link>
+                        </CardTitle>
+                        <p className="truncate text-[13px] text-muted-foreground">
+                          {b.businessInfo.businessName ||
+                            b.businessInfo.industry ||
+                            b.botInfo.botName ||
+                            "Untitled"}
+                        </p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <CardTitle className="truncate text-base">{b.name}</CardTitle>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {b.businessInfo.businessName || b.botInfo.botName || "Untitled"}
-                      </p>
-                    </div>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={
-                        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      }
-                    />
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem render={<Link href={`/dashboard/bots/${b._id}`} />}>
-                        <Settings2 className="mr-2 h-4 w-4" /> Manage
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setPending(b)}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </CardHeader>
-                <CardContent className="mt-4 flex items-center justify-between">
-                  {b.status === "live" ? (
-                    <Badge
-                      variant="outline"
-                      className="border-emerald-300 bg-emerald-50 text-emerald-700"
-                    >
-                      live
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 shrink-0 text-muted-foreground"
+                            aria-label={`Options for ${b.name}`}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem render={<Link href={`/dashboard/bots/${b._id}`} />}>
+                          <Settings2 className="mr-2 h-4 w-4" /> Manage
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setPending(b)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </CardHeader>
+                  <CardContent className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <Badge variant="secondary" className="font-normal">
+                      {PROVIDER_LABEL[b.provider] ?? b.provider}
                     </Badge>
-                  ) : (
-                    <Badge variant="secondary">draft</Badge>
-                  )}
-                  <Button
-                    render={<Link href={`/dashboard/bots/${b._id}`} />}
-                    nativeButton={false}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Open
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                    <span className="truncate text-[13px] text-muted-foreground">
+                      {b.model || "Default model"}
+                    </span>
+                    <span className="text-[13px] text-muted-foreground tabular-nums">
+                      · {editedLabel(b.updatedAt)}
+                    </span>
+                  </CardContent>
+                  <CardFooter className="mt-auto flex items-center justify-between gap-2">
+                    <Badge variant={isLive ? "default" : "secondary"}>
+                      {isLive ? "Live" : "Draft"}
+                    </Badge>
+                    <Button
+                      render={<Link href={`/dashboard/bots/${b._id}`} />}
+                      nativeButton={false}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Open <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            );
+          })}
         </motion.div>
       )}
 

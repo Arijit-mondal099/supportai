@@ -1,6 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { makeChain } from "@/tests/helpers";
-import { getAccountAnalytics } from "./analytics";
+import {
+  buildDailyBuckets,
+  buildMonthlyBuckets,
+  buildTodayBuckets,
+  buildYearlyBuckets,
+  emptySeries,
+  getAccountAnalytics,
+  getActivitySeries,
+  isActivityRange,
+} from "./analytics";
 
 const mockDb = vi.hoisted(() => vi.fn().mockResolvedValue({}));
 const mockBotFind = vi.hoisted(() => vi.fn());
@@ -128,5 +137,110 @@ describe("getAccountAnalytics", () => {
     // aggregates are not queried when there are no bot ids
     expect(mockAgg).not.toHaveBeenCalled();
     expect(mockMsgCount).not.toHaveBeenCalled();
+  });
+
+  it("returns the ranged series in daily when a non-default range is requested", async () => {
+    mockBotFind.mockReturnValue(makeChain([liveBot, draftBot]));
+    mockAgg
+      .mockResolvedValueOnce([{ _id: todayKey, count: 3 }]) // 7d series
+      .mockResolvedValueOnce([{ _id: "b1", count: 10 }]); // top agents
+    mockConvFind.mockReturnValue(makeChain([]));
+
+    const out = await getAccountAnalytics("owner_1", "7d");
+
+    expect(out.daily).toHaveLength(7);
+    expect(out.daily.filter((d) => d.messages > 0)).toHaveLength(1);
+  });
+});
+
+describe("isActivityRange", () => {
+  it("accepts only the supported range values", async () => {
+    expect(isActivityRange("today")).toBe(true);
+    expect(isActivityRange("7d")).toBe(true);
+    expect(isActivityRange("14d")).toBe(true);
+    expect(isActivityRange("12m")).toBe(true);
+    expect(isActivityRange("yearly")).toBe(true);
+    expect(isActivityRange("decade")).toBe(false);
+    expect(isActivityRange(undefined)).toBe(false);
+    expect(isActivityRange(null)).toBe(false);
+  });
+});
+
+describe("activity bucket builders", () => {
+  const now = new Date("2026-09-18T12:00:00.000Z");
+
+  it("builds 24 hourly buckets for today with 12-hour labels", async () => {
+    const points = buildTodayBuckets(
+      now,
+      new Map([
+        [0, 2],
+        [12, 5],
+        [23, 1],
+      ]),
+    );
+
+    expect(points).toHaveLength(24);
+    expect(points[0]).toEqual({ label: "12a", messages: 2 });
+    expect(points[11]).toEqual({ label: "11a", messages: 0 });
+    expect(points[12]).toEqual({ label: "12p", messages: 5 });
+    expect(points[23]).toEqual({ label: "11p", messages: 1 });
+  });
+
+  it("builds a 7-day window ending today", async () => {
+    const points = buildDailyBuckets(now, 7, new Map([["2026-09-18", 4]]));
+
+    expect(points).toHaveLength(7);
+    expect(points[0].label).toBe("9/12");
+    expect(points[6]).toEqual({ label: "9/18", messages: 4 });
+  });
+
+  it("builds 12 monthly buckets ending in the current month", async () => {
+    const points = buildMonthlyBuckets(now, 12, new Map([["2026-09", 9]]));
+
+    expect(points).toHaveLength(12);
+    expect(points[0].label).toBe("Oct ’25");
+    expect(points[11]).toEqual({ label: "Sep ’26", messages: 9 });
+  });
+
+  it("fills missing years between the first activity and now", async () => {
+    const points = buildYearlyBuckets(now, new Map([[2024, 7]]));
+
+    expect(points).toEqual([
+      { label: "2024", messages: 7 },
+      { label: "2025", messages: 0 },
+      { label: "2026", messages: 0 },
+    ]);
+  });
+
+  it("returns a single current-year bucket when there is no activity", async () => {
+    expect(emptySeries("yearly", now)).toEqual([{ label: "2026", messages: 0 }]);
+    expect(emptySeries("today", now)).toHaveLength(24);
+    expect(emptySeries("7d", now)).toHaveLength(7);
+    expect(emptySeries("14d", now)).toHaveLength(14);
+    expect(emptySeries("12m", now)).toHaveLength(12);
+  });
+});
+
+describe("getActivitySeries", () => {
+  it("returns shaped points for the requested range", async () => {
+    const todayKey = new Date().toISOString().slice(0, 10);
+    mockBotFind.mockReturnValue(makeChain([liveBot]));
+    mockAgg.mockResolvedValueOnce([{ _id: todayKey, count: 6 }]);
+
+    const points = await getActivitySeries("owner_1", "7d");
+
+    expect(points).toHaveLength(7);
+    expect(points.filter((p) => p.messages > 0)).toHaveLength(1);
+    expect(mockAgg).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns zero-filled buckets without querying when there are no bots", async () => {
+    mockBotFind.mockReturnValue(makeChain([]));
+
+    const points = await getActivitySeries("owner_1", "today");
+
+    expect(points).toHaveLength(24);
+    expect(points.every((p) => p.messages === 0)).toBe(true);
+    expect(mockAgg).not.toHaveBeenCalled();
   });
 });
