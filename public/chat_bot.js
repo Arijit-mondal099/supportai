@@ -205,8 +205,12 @@
 
     /* Scroll region: hero + messages */
     .cb-scroll {
-      flex: 1;
+      flex: 1 1 auto;
+      min-height: 0;
       overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
       padding: 8px 24px 12px;
       display: flex;
       flex-direction: column;
@@ -243,6 +247,7 @@
 
     /* Hero (empty state) */
     .cb-hero {
+      flex-shrink: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -316,6 +321,7 @@
 
     /* Messages */
     #chatbot-messages {
+      flex-shrink: 0;
       display: flex;
       flex-direction: column;
       gap: 10px;
