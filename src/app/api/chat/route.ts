@@ -53,14 +53,13 @@ export async function POST(request: NextRequest) {
     await db_connection();
 
     // Resolve the chatbot by its id (preferred) or, for legacy data-owner-id
-    // embeds, fall back to that owner's first live (else first) bot.
+    // embeds, fall back to that owner's first live bot (drafts never answer).
     let bot =
       botId && isValidObjectId(botId)
         ? await ChatbotModel.findOne({ _id: botId, ...(preview ? {} : { status: "live" }) })
         : null;
     if (!bot && ownerId) {
       bot = await ChatbotModel.findOne({ ownerId, status: "live" }).sort({ createdAt: 1 });
-      if (!bot) bot = await ChatbotModel.findOne({ ownerId }).sort({ createdAt: 1 });
     }
 
     if (!bot) {

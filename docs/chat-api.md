@@ -24,7 +24,7 @@ Validated by `chatRequestSchema` (`src/lib/validations.ts`):
 | ----------- | ------------------------ | --------------------------------------------------------------------------- |
 | `prompt`    | Yes                      | Non-empty string                                                            |
 | `botId`     | One of `botId`/`ownerId` | Valid ObjectId preferred. `ownerId` is legacy fallback only.                |
-| `ownerId`   | (see above)              | Nullable. Falls back to owner's first `live` (else first) bot.              |
+| `ownerId`   | (see above)              | Nullable. Legacy fallback: owner's first `live` bot (`404` when none).      |
 | `sessionId` | No                       | Persist the exchange when present and `preview` is falsy.                   |
 | `preview`   | No                       | Playground mode: replays `history`, skips live-check scoping and DB writes. |
 | `history`   | No                       | Prior turns for preview only (`{role: user\|model, text}`), last 20 kept.   |
