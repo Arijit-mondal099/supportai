@@ -611,6 +611,10 @@
   const wrapper = document.createElement("div");
   wrapper.id = "supportai-chatbot-wrapper";
   wrapper.style.setProperty("--accent", "#c96442");
+  // Opt out of smooth-scroll hijacking: libs like Lenis swallow wheel events
+  // at the document level. The attribute lives on the light-DOM wrapper
+  // because shadow events retarget to the host for outside listeners, so
+  // inner elements are invisible to such libraries.
   // Collapse the host element out of the page's layout: it carries only
   // fixed-position shadow content, so it takes no space and shrugs off host
   // rules like `body{display:flex}` or `div{margin:...}`. Declarations carry
@@ -626,6 +630,7 @@
   wrapper.style.setProperty("margin", "0", "important");
   wrapper.style.setProperty("padding", "0", "important");
   wrapper.style.setProperty("border", "0", "important");
+  wrapper.setAttribute("data-lenis-prevent", "");
   const shadow = wrapper.attachShadow({ mode: "open" });
   shadow.appendChild(style);
 
@@ -735,7 +740,13 @@
 
   shadow.appendChild(button);
   shadow.appendChild(chat_box);
-  document.body.appendChild(wrapper);
+  // Mount on <html>, not <body>: any transformed/filtered ancestor becomes
+  // the containing block for `position: fixed` descendants (and clips them
+  // through its own overflow), and app shells commonly wrap body content in
+  // such containers for transitions. <html> itself is effectively never
+  // transformed, so the toggle and panel stay viewport-anchored on every
+  // host. (Falls back to body only if documentElement is unavailable.)
+  (document.documentElement || document.body).appendChild(wrapper);
 
   const scroller = chat_box.querySelector("#cb-scroll");
   const hero = chat_box.querySelector("#cb-hero");
@@ -779,6 +790,23 @@
     scroller.classList.toggle("cb-mask-bottom", remaining > 8);
   }
   scroller.addEventListener("scroll", syncScrollFade, { passive: true });
+  // Hostile-host shield: some apps lock page scrolling with document-level
+  // `wheel`/`touchmove` preventDefault (modal managers, scroll-lock libs,
+  // smooth-scrollers, full-page scrollers). Those composed events bubble out
+  // of the shadow tree, so stop them at the panel — the widget scrolls
+  // natively and never needs host handlers to see these events. Passive is
+  // fine: stopPropagation (unlike preventDefault) is allowed in passive
+  // listeners. Scoped to the panel so the floating toggle still lets the
+  // page scroll normally underneath it.
+  ["wheel", "touchmove"].forEach(function (type) {
+    chat_box.addEventListener(
+      type,
+      function (e) {
+        e.stopPropagation();
+      },
+      { passive: true },
+    );
+  });
   window.addEventListener("resize", syncScrollFade);
   syncScrollFade();
 
