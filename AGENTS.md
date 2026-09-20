@@ -21,6 +21,10 @@
 
 `lint → typecheck → test → format` — pre-commit runs lint+format, so run them first when iterating.
 
+CI (`.github/workflows/ci.yml`) runs lint+format, typecheck, test, and build as independent jobs on `main`/`master` using `npm ci` with Node from `.nvmrc`. The build job injects stub env vars — `npm run build` needs env vars present to behave; `src/lib/env.ts` never throws, so missing vars surface as downstream failures, not startup errors.
+
+Tests are mock-based — no DB or services needed (`requireOwner`, RAG, etc. are mocked per test; `console.error` is silenced in `src/tests/setup.ts`). Vitest only picks up `src/**/*.{test,spec}.*` and excludes `src/components/ui`, `src/components/dashboard`, and `src/hooks`; coverage is limited to `src/lib` + `src/app/api`. Run one file with `npx vitest run <path>`.
+
 ## Git hooks (husky)
 
 | Hook         | What it runs                                                               |
@@ -82,11 +86,12 @@ Copy `.env.example` → `.env`.
 ## Key patterns
 
 - **Server / client boundary**: server components fetch data (session, DB) and pass as props to client components. Client components (`"use client"`) handle all interactivity.
-- **Route protection**: `src/proxy.ts` is a Next.js middleware **misnamed and entirely unused** — it exports `config.matcher` and the middleware signature but sits at `src/proxy.ts` instead of `src/middleware.ts`, so it is **never invoked**. Dashboard pages call `requireOwner()` inline instead (defined in `src/lib/auth.ts:16`).
+- **Route protection**: `src/proxy.ts` is a Next.js 16 **proxy** (the `middleware.ts` convention was renamed to `proxy.ts` in Next 16) — its `proxy()` + `config.matcher: ["/dashboard/:path*"]` guard is live. Dashboard pages additionally call `requireOwner()` inline (defined in `src/lib/auth.ts:16`), so both layers apply.
+- **Route groups**: dashboard pages live under `src/app/(user)/dashboard` — `(user)` is a route group, so URLs stay `/dashboard/...` with no `/user` prefix.
 - **Auth flow**: `/api/auth/login` → Scalekit → `/api/auth/verify?code=...` → set cookie → redirect to `/dashboard`.
 - **API response shape**: consistently `{ success: boolean, message?: string, data?: any, error?: any }`.
 - **Per-bot API keys**: each agent carries its own provider, model, and API key (`apiKeyOverride` in the model — note the field name) — no account-level fallback. Resolved in `src/lib/providerKey.ts`.
-- **Redis caching & rate limiting**: `Cache` class (`src/lib/cache.ts`) provides `get`/`set`/`delete`/`deletePattern`/`memoize`; `rateLimit` (`src/lib/rate-limit.ts`) uses a token-bucket Lua script via `redis.eval`. Both gracefully degrade to no-ops when Upstash env vars are absent. Cache invalidation is manual on write paths (PUT/DELETE/POST).
+- **Redis caching & rate limiting**: `Cache` class (`src/lib/cache.ts`) provides `get`/`set`/`delete`/`deletePattern`/`memoize`; `rateLimit` (`src/lib/rate-limit.ts`) uses a fixed-window counter (Lua `INCR`+`EXPIRE` via `redis.eval`). Both gracefully degrade to no-ops when Upstash env vars are absent. Cache invalidation is manual on write paths (PUT/DELETE/POST). Chat limits: 20 req/min per IP for embedded chat, 60/min for playground previews (`src/app/api/chat/route.ts:39`).
 - **Rate-limit IP resolution**: `getClientIp` in `src/lib/rate-limit.ts` prefers Cloudflare's `cf-connecting-ip` (platform-verified) before `x-forwarded-for` (spoofable), then `x-real-ip`, then `"0.0.0.0"`.
 - **Knowledge base**: two layers — (1) system instruction built from business/persona config via `buildKnowledge()`, (2) optional RAG document retrieval via Pinecone (gated by `PINECONE_API_KEY`).
 - **RAG is optional**: `isRagConfigured()` checks for `PINECONE_API_KEY` + `PINECONE_INDEX`. Without them, only the system instruction is used.
@@ -106,12 +111,14 @@ Copy `.env.example` → `.env`.
 
 ## Providers & models
 
-| Provider | Models                                                   | Embeddings                      |
-| -------- | -------------------------------------------------------- | ------------------------------- |
-| `gemini` | `gemini-2.0-flash`, `gemini-1.5-flash`, `gemini-1.5-pro` | `text-embedding-004` (768d)     |
-| `openai` | `gpt-4o-mini`, `gpt-4o`, `gpt-4-turbo`                   | `text-embedding-3-small` (768d) |
+| Provider | Models                                                                    | Embeddings                      |
+| -------- | ------------------------------------------------------------------------- | ------------------------------- |
+| `gemini` | `gemini-2.5-flash-lite`, `gemini-3.1-flash-lite`, `gemini-3.5-flash-lite` | `gemini-embedding-001` (768d)   |
+| `openai` | `gpt-4o-mini`, `gpt-4o`, `gpt-4-turbo`                                    | `text-embedding-3-small` (768d) |
 
-Default model for each provider is the first in its list (`gemini-2.0-flash`, `gpt-4o-mini`). Defined in `src/lib/options.ts`.
+Default model for each provider is the first in its list (`gemini-2.5-flash-lite`, `gpt-4o-mini`). Defined in `src/lib/options.ts`. Chat temperature is fixed at 0.3 (`src/lib/ai.ts`).
+
+**Do not change the embedding model lightly:** Pinecone vectors are stored in one 768-dim space (`EMBED_DIMENSIONS = 768`; Gemini output truncated via MRL). Switching the embedding model invalidates every existing vector — docs must be deleted and re-added, or similarity scores are bogus. See the NOTE in `src/lib/ai.ts`.
 
 ## Style
 

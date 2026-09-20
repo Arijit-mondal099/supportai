@@ -132,6 +132,19 @@ describe("POST /api/chat", () => {
     expect(body.message).toBe("This chatbot is not published yet.");
   });
 
+  it("returns 404 when the legacy ownerId fallback finds no live bot", async () => {
+    mockFindOne.mockImplementation(() => makeChain(null));
+    const res = await POST(jsonReq({ prompt: "hi", ownerId: "owner_1", sessionId: "sess_9" }));
+    const body = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(body.message).toBe("Chatbot not found.");
+    // drafts must never answer: no model call, nothing persisted
+    expect(mockGetChatModel).not.toHaveBeenCalled();
+    expect(mockConvUpdate).not.toHaveBeenCalled();
+    expect(mockMsgInsertMany).not.toHaveBeenCalled();
+  });
+
   it("returns 400 'No API key configured' when resolveProviderKey has no key", async () => {
     mockFindOne.mockImplementation(() => makeChain(botDoc));
     mockResolve.mockReturnValue({ provider: "gemini", apiKey: "", model: "gemini-1.5-pro" });
